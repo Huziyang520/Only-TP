@@ -1,68 +1,38 @@
 package com.onlytp.onlytpmod.network;
 
-import com.onlytp.onlytpmod.config.OnlyTPConfig;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import com.onlytp.onlytpmod.OnlyTPMod;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigSyncPacket {
-    private final String mode;
-    private final boolean showPauseButton;
-    private final int guiButtonStyle;
-    private final List<String> blacklistAllowTp;
-    private final List<String> blacklistBlockNonTp;
-    private final List<String> blacklistDisabled;
+public record ConfigSyncPacket(
+        String mode,
+        boolean showPauseButton,
+        int guiButtonStyle,
+        List<String> blacklistAllowTp,
+        List<String> blacklistBlockNonTp,
+        List<String> blacklistDisabled
+) implements CustomPacketPayload {
 
-    public ConfigSyncPacket(String mode, boolean showPauseButton, int guiButtonStyle,
-                            List<String> blA, List<String> blB, List<String> blC) {
-        this.mode = mode;
-        this.showPauseButton = showPauseButton;
-        this.guiButtonStyle = guiButtonStyle;
-        this.blacklistAllowTp = new ArrayList<>(blA);
-        this.blacklistBlockNonTp = new ArrayList<>(blB);
-        this.blacklistDisabled = new ArrayList<>(blC);
-    }
+    public static final CustomPacketPayload.Type<ConfigSyncPacket> TYPE =
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(OnlyTPMod.MODID, "config_sync"));
 
-    public ConfigSyncPacket(FriendlyByteBuf buf) {
-        this.mode = buf.readUtf();
-        this.showPauseButton = buf.readBoolean();
-        this.guiButtonStyle = buf.readVarInt();
-        this.blacklistAllowTp = readList(buf);
-        this.blacklistBlockNonTp = readList(buf);
-        this.blacklistDisabled = readList(buf);
-    }
+    public static final StreamCodec<ByteBuf, ConfigSyncPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, ConfigSyncPacket::mode,
+            ByteBufCodecs.BOOL, ConfigSyncPacket::showPauseButton,
+            ByteBufCodecs.VAR_INT, ConfigSyncPacket::guiButtonStyle,
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), ConfigSyncPacket::blacklistAllowTp,
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), ConfigSyncPacket::blacklistBlockNonTp,
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), ConfigSyncPacket::blacklistDisabled,
+            ConfigSyncPacket::new
+    );
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(mode);
-        buf.writeBoolean(showPauseButton);
-        buf.writeVarInt(guiButtonStyle);
-        writeList(buf, blacklistAllowTp);
-        writeList(buf, blacklistBlockNonTp);
-        writeList(buf, blacklistDisabled);
-    }
-
-    public void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
-            OnlyTPConfig.mode = this.mode;
-            OnlyTPConfig.showPauseButton = this.showPauseButton;
-            OnlyTPConfig.guiButtonStyle = this.guiButtonStyle;
-            OnlyTPConfig.blacklistAllowTp = new ArrayList<>(this.blacklistAllowTp);
-            OnlyTPConfig.blacklistBlockNonTp = new ArrayList<>(this.blacklistBlockNonTp);
-            OnlyTPConfig.blacklistDisabled = new ArrayList<>(this.blacklistDisabled);
-        });
-    }
-
-    private static List<String> readList(FriendlyByteBuf buf) {
-        int s = buf.readVarInt();
-        List<String> l = new ArrayList<>();
-        for (int i = 0; i < s; i++) l.add(buf.readUtf());
-        return l;
-    }
-
-    private static void writeList(FriendlyByteBuf buf, List<String> list) {
-        buf.writeVarInt(list.size());
-        for (String s : list) buf.writeUtf(s);
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

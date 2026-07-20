@@ -16,8 +16,10 @@
   "gui.onlytp.already_in_blacklist": "§c该玩家已在黑名单中",
   "gui.onlytp.click_to_remove": "§c点击删除",
   "message.onlytp.blocked": "§c该指令已被管理员禁止！仅允许使用 TP 类指令。",
+  "message.onlytp.blocked_gamemode": "§c游戏模式切换器已被管理员禁止！仅允许使用 TP 类指令。",
 
   "gui.onlytp.toggle_label": "界面设置：",
   "gui.onlytp.toggle_show_button": "显示暂停按钮",
-  "gui.onlytp.toggle_vanilla_texture": "原版风格纹理"
+  "gui.onlytp.toggle_vanilla_texture": "原版风格纹理",
+  "gui.onlytp.pause_button": "TP"
 }

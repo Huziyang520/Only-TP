@@ -19,5 +19,7 @@
 
   "gui.onlytp.toggle_label": "UI Settings:",
   "gui.onlytp.toggle_show_button": "Show pause button",
-  "gui.onlytp.toggle_vanilla_texture": "Vanilla style texture"
+  "gui.onlytp.toggle_vanilla_texture": "Vanilla style texture",
+
+  "gui.onlytp.pause_button": "TP"
 }

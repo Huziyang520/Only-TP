@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "com.onlytp.onlytpmod.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"CommandHandlerMixin",
+		"GameModeMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

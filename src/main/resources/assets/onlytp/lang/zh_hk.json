@@ -19,5 +19,7 @@
 
   "gui.onlytp.toggle_label": "介面設定：",
   "gui.onlytp.toggle_show_button": "顯示暫停按鈕",
-  "gui.onlytp.toggle_vanilla_texture": "原版風格紋理"
+  "gui.onlytp.toggle_vanilla_texture": "原版風格紋理",
+
+  "gui.onlytp.pause_button": "TP"
 }

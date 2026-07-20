@@ -1,8 +1,8 @@
 package com.onlytp.onlytpmod.config;
 
-import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.toml.TomlParser;
-import com.electronwill.nightconfig.toml.TomlWriter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
@@ -10,12 +10,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * 配置管理 — 使用 Gson (JSON) 读写，避免外部 TOML 依赖。
+ */
 public class OnlyTPConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Path CONFIG_PATH = Paths.get("config", "onlytp.toml");
+    private static final Path CONFIG_PATH = Paths.get("config", "onlytp.json");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static String mode = "disabled";
     public static boolean showPauseButton = true;
@@ -47,14 +51,19 @@ public class OnlyTPConfig {
     public static void readFile() {
         try {
             String text = Files.readString(CONFIG_PATH);
-            Config cfg = new TomlParser().parse(text);
-            mode = cfg.getOrElse("mode", MODE_DISABLED);
-            showPauseButton = cfg.getOrElse("show_pause_button", true);
-            guiButtonStyle = cfg.getOrElse("gui_button_style", 0);
-            blacklistAllowTp = getSubList(cfg, "mode_allow_tp_only");
-            blacklistBlockNonTp = getSubList(cfg, "mode_block_non_tp");
-            blacklistDisabled = getSubList(cfg, "mode_disabled");
-            LOGGER.info("Config read - mode: {}, showPauseButton: {}, guiButtonStyle: {}", mode, showPauseButton, guiButtonStyle);
+            Map<String, Object> map = GSON.fromJson(text,
+                    new TypeToken<Map<String, Object>>() {}.getType());
+            if (map == null) { resetDefaults(); return; }
+
+            mode = stringVal(map.get("mode"), MODE_DISABLED);
+            showPauseButton = boolVal(map.get("show_pause_button"), true);
+            guiButtonStyle = intVal(map.get("gui_button_style"), 0);
+            blacklistAllowTp = listVal(map.get("blacklist_allow_tp"));
+            blacklistBlockNonTp = listVal(map.get("blacklist_block_non_tp"));
+            blacklistDisabled = listVal(map.get("blacklist_disabled"));
+
+            LOGGER.info("Config read - mode: {}, showPauseButton: {}, guiButtonStyle: {}",
+                    mode, showPauseButton, guiButtonStyle);
         } catch (Exception e) {
             LOGGER.error("Failed to read config, using defaults", e);
             resetDefaults();
@@ -63,16 +72,18 @@ public class OnlyTPConfig {
 
     public static void writeFile() {
         try {
-            Config cfg = Config.inMemory();
-            cfg.set("mode", mode);
-            cfg.set("show_pause_button", showPauseButton);
-            cfg.set("gui_button_style", guiButtonStyle);
-            setSubList(cfg, "mode_allow_tp_only", blacklistAllowTp);
-            setSubList(cfg, "mode_block_non_tp", blacklistBlockNonTp);
-            setSubList(cfg, "mode_disabled", blacklistDisabled);
-            String toml = new TomlWriter().writeToString(cfg);
-            Files.writeString(CONFIG_PATH, toml);
-            LOGGER.info("Config written - mode: {}, showPauseButton: {}, guiButtonStyle: {}", mode, showPauseButton, guiButtonStyle);
+            var map = Map.of(
+                    "mode", mode,
+                    "show_pause_button", showPauseButton,
+                    "gui_button_style", guiButtonStyle,
+                    "blacklist_allow_tp", blacklistAllowTp,
+                    "blacklist_block_non_tp", blacklistBlockNonTp,
+                    "blacklist_disabled", blacklistDisabled
+            );
+            String json = GSON.toJson(map);
+            Files.writeString(CONFIG_PATH, json);
+            LOGGER.info("Config written - mode: {}, showPauseButton: {}, guiButtonStyle: {}",
+                    mode, showPauseButton, guiButtonStyle);
         } catch (Exception e) {
             LOGGER.error("Failed to write config", e);
         }
@@ -81,18 +92,6 @@ public class OnlyTPConfig {
     public static void save() { writeFile(); }
     public static void load() { readFile(); }
 
-    private static List<String> getSubList(Config cfg, String section) {
-        Config sub = cfg.get(section);
-        if (sub == null) return new ArrayList<>();
-        return new ArrayList<>(sub.getOrElse("blacklist", Collections.emptyList()));
-    }
-
-    private static void setSubList(Config cfg, String section, List<String> list) {
-        Config sub = Config.inMemory();
-        sub.set("blacklist", list);
-        cfg.set(section, sub);
-    }
-
     private static void resetDefaults() {
         mode = MODE_DISABLED;
         showPauseButton = true;
@@ -100,6 +99,34 @@ public class OnlyTPConfig {
         blacklistAllowTp = new ArrayList<>();
         blacklistBlockNonTp = new ArrayList<>();
         blacklistDisabled = new ArrayList<>();
+    }
+
+    // ─── JSON 取值辅助 ───
+
+    @SuppressWarnings("unchecked")
+    private static String stringVal(Object v, String def) {
+        return v instanceof String s ? s : def;
+    }
+
+    private static boolean boolVal(Object v, boolean def) {
+        return v instanceof Boolean b ? b : def;
+    }
+
+    private static int intVal(Object v, int def) {
+        if (v instanceof Number n) return n.intValue();
+        return def;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<String> listVal(Object v) {
+        if (v instanceof List<?> list) {
+            List<String> result = new ArrayList<>();
+            for (Object e : list) {
+                if (e instanceof String s) result.add(s);
+            }
+            return result;
+        }
+        return new ArrayList<>();
     }
 
     // ─── 查询方法 ───

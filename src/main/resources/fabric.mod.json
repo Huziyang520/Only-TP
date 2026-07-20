@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "onlytp",
+	"version": "${version}",
+	"name": "Only TP Mod",
+	"description": "Teleport command management mod for Minecraft servers.",
+	"authors": [
+		"Huziyang520"
+	],
+	"contact": {
+		"homepage": "https://github.com/Huziyang520",
+		"sources": "https://github.com/Huziyang520/OnlyTP"
+	},
+	"license": "MIT",
+	"icon": "assets/onlytp/onlytp.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.onlytp.onlytpmod.OnlyTPMod"
+		],
+		"client": [
+			"com.onlytp.onlytpmod.OnlyTPModClient"
+		]
+	},
+	"mixins": [
+		"onlytp.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
