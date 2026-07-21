@@ -16,6 +16,7 @@
   "gui.onlytp.already_in_blacklist": "§cPlayer is already in the blacklist",
   "gui.onlytp.click_to_remove": "§cClick to remove",
   "message.onlytp.blocked": "§cThis command has been disabled by the admin! Only TP commands are allowed.",
+  "message.onlytp.blocked_gamemode": "§cGame mode switcher has been disabled by the admin!",
 
   "gui.onlytp.toggle_label": "UI Settings:",
   "gui.onlytp.toggle_show_button": "Show pause button",

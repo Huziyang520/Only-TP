@@ -16,6 +16,7 @@
   "gui.onlytp.already_in_blacklist": "§c該玩家已在黑名單中",
   "gui.onlytp.click_to_remove": "§c點擊刪除",
   "message.onlytp.blocked": "§c該指令已被管理員禁止！僅允許使用 TP 類指令。",
+  "message.onlytp.blocked_gamemode": "§c管理員已禁止使用遊戲模式切換器！",
 
   "gui.onlytp.toggle_label": "介面設定：",
   "gui.onlytp.toggle_show_button": "顯示暫停按鈕",
