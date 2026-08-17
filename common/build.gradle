@@ -1,0 +1,39 @@
+plugins {
+    id 'multiloader-common'
+    id 'fabric-loom'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    // nightconfig（TOML）：Common 仅编译期需要，运行时由 Forge（自带）与 Fabric（显式引入）提供
+    compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'
+    compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
+
+    // AvalonBase 前置支持库（GUI 主题 / 平台抽象）：编译期引用其 fabric dev jar（named 映射）
+    // 用 fileTree 通配匹配任意版本，避免 AvalonBase 升级版本时需同步修改本文件（依赖约束由运行期前置声明保证 >=1.0）
+    modCompileOnly fileTree(project.file("../../../AvalonBase/1.20.1/fabric/build/devlibs")) {
+        include "avalonbase-fabric-1.20.1-*-dev.jar"
+    }
+}
+
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+}
+
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+}

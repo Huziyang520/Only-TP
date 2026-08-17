@@ -1,0 +1,57 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.minecraftforge.gradle'
+    id 'org.parchmentmc.librarian.forgegradle'
+}
+
+minecraft {
+    mappings channel: 'parchment', version: "${parchment_version}-${parchment_minecraft}"
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'client'
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'server'
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            args '--nogui'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 mods.toml 声明前置
+    // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 mods.toml 保证）
+    implementation fileTree(project.file("../../../AvalonBase/1.20.1/forge/build/libs")) {
+        include "avalonbase-forge-1.20.1-*.jar"
+        exclude "*-sources.jar"
+        exclude "*-javadoc.jar"
+    }
+    // nightconfig（TOML）：Forge 运行时自带，编译期显式声明以解析 common 的引用
+    compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'
+    compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
+}
+
+// ForgeGradle 6 自动处理 reobf
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    sourceCompatibility = targetCompatibility = '17'
+}
