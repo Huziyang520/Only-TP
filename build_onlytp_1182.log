@@ -1,0 +1,32 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :buildSrc:extractPluginRequests UP-TO-DATE
+> Task :buildSrc:generatePluginAdapters UP-TO-DATE
+> Task :buildSrc:compileJava
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:compileGroovyPlugins
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources
+> Task :buildSrc:classes
+> Task :buildSrc:jar
+
+> Configure project :common
+Fabric Loom: 1.9.2
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file 'D:\�����\Mymods\Only TP Re\Only TP\1.18.2\common\build.gradle' line: 10
+
+* What went wrong:
+A problem occurred evaluating project ':common'.
+> Could not get unknown property 'parchment_minecraft' for object of type net.fabricmc.loom.configuration.providers.mappings.LayeredMappingSpecBuilderImpl.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1m
+7 actionable tasks: 4 executed, 3 up-to-date

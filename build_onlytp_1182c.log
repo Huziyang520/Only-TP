@@ -1,0 +1,65 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :buildSrc:extractPluginRequests UP-TO-DATE
+> Task :buildSrc:generatePluginAdapters UP-TO-DATE
+> Task :buildSrc:compileJava UP-TO-DATE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:compileGroovyPlugins UP-TO-DATE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :common
+Fabric Loom: 1.9.2
+
+> Configure project :fabric
+Fabric Loom: 1.9.2
+
+> Task :common:compileJava UP-TO-DATE
+
+> Task :forge:compileJava
+D:\�����\Mymods\Only TP Re\Only TP\1.18.2\forge\src\main\java\com\onlytp\onlytpmod\event\GuiEventHandler.java:57: ����: �Ҳ�������
+    public static void onScreenInit(ScreenEvent.Init.Post event) {
+                                               ^
+  ����:   �� Init
+  λ��: �� ScreenEvent
+D:\�����\Mymods\Only TP Re\Only TP\1.18.2\forge\src\main\java\com\onlytp\onlytpmod\event\GuiEventHandler.java:75: ����: �����ݵ�����: lambda ����ʽ�еĲ������Ͳ�����
+                (btn) -> new TextComponent("")
+                ^
+D:\�����\Mymods\Only TP Re\Only TP\1.18.2\forge\src\main\java\com\onlytp\onlytpmod\event\GuiEventHandler.java:73: ����: �Ҳ�������
+        event.addListener(new Button(x, y, btnSize, btnSize, new TextComponent(""),
+                          ^
+  ����: ������ (int,int,int,int,TextComponent,(btn)->ope[...]n(mc),(btn)->new[...]t(""))
+ע: ĳЩ��Ϣ�Ѿ�����; ��ʹ�� -Xdiags:verbose ���±����Ի���������
+3 ������
+
+> Task :forge:compileJava FAILED
+[Incubating] Problems report is available at: file:///D:/%E6%B5%8F%E8%A7%88%E5%99%A8/Mymods/Only%20TP%20Re/Only%20TP/1.18.2/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':forge:compileJava'.
+> Compilation failed; see the compiler output below.
+  D:\�����\Mymods\Only TP Re\Only TP\1.18.2\forge\src\main\java\com\onlytp\onlytpmod\event\GuiEventHandler.java:73: ����: �Ҳ�������
+          event.addListener(new Button(x, y, btnSize, btnSize, new TextComponent(""),
+                            ^
+    ����: ������ (int,int,int,int,TextComponent,(btn)->ope[...]n(mc),(btn)->new[...]t(""))
+  D:\�����\Mymods\Only TP Re\Only TP\1.18.2\forge\src\main\java\com\onlytp\onlytpmod\event\GuiEventHandler.java:75: ����: �����ݵ�����: lambda ����ʽ�еĲ������Ͳ�����
+                  (btn) -> new TextComponent("")
+                  ^
+  D:\�����\Mymods\Only TP Re\Only TP\1.18.2\forge\src\main\java\com\onlytp\onlytpmod\event\GuiEventHandler.java:57: ����: �Ҳ�������
+      public static void onScreenInit(ScreenEvent.Init.Post event) {
+                                                 ^
+    ����:   �� Init
+    λ��: �� ScreenEvent
+  ע: ĳЩ��Ϣ�Ѿ�����; ��ʹ�� -Xdiags:verbose ���±����Ի���������
+  3 ������
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+9 actionable tasks: 1 executed, 8 up-to-date
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1m 7s
