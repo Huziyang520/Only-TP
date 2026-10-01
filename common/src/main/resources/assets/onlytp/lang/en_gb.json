@@ -1,0 +1,24 @@
+{
+  "gui.onlytp.title": "Only TP Settings",
+  "gui.onlytp.mode_label": "Mode:",
+  "gui.onlytp.mode_allow_tp_only": "Non-OP: TP Only",
+  "gui.onlytp.mode_block_non_tp": "OP: Block Non-TP",
+  "gui.onlytp.mode_both": "Enable Both",
+  "gui.onlytp.mode_disabled": "Disable Mod",
+  "gui.onlytp.blacklist_label": "Blacklist:",
+  "gui.onlytp.input_hint": "Enter player name",
+  "gui.onlytp.add": "＋ Add",
+  "gui.onlytp.save": "Save",
+  "gui.onlytp.cancel": "Cancel",
+  "gui.onlytp.view_only": "§cView only, you don't have edit permission",
+  "gui.onlytp.can_edit": "§aYou have edit permission",
+  "gui.onlytp.already_in_blacklist": "§cPlayer is already in the blacklist",
+  "gui.onlytp.click_to_remove": "§cClick to remove",
+  "message.onlytp.blocked_gamemode": "§cGame mode switching is disabled by admin!",
+  "message.onlytp.blocked": "§cThis command has been disabled by the admin! Only TP commands are allowed.",
+  "message.onlytp.avalon_missing": "Only TP: Install AvalonBase to enable visual editing. This prompt can be disabled in the config file.",
+
+  "gui.onlytp.toggle_label": "UI Settings:",
+  "gui.onlytp.toggle_show_button": "Show pause button",
+  "gui.onlytp.toggle_vanilla_texture": "Vanilla style texture"
+}
