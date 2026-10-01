@@ -1,0 +1,24 @@
+{
+  "gui.onlytp.title": "Only TP 設定",
+  "gui.onlytp.mode_label": "模式選擇：",
+  "gui.onlytp.mode_allow_tp_only": "非OP玩家僅允許TP指令",
+  "gui.onlytp.mode_block_non_tp": "OP玩家禁止非TP指令",
+  "gui.onlytp.mode_both": "同時啟用",
+  "gui.onlytp.mode_disabled": "關閉模組功能",
+  "gui.onlytp.blacklist_label": "黑名單管理：",
+  "gui.onlytp.input_hint": "輸入玩家名",
+  "gui.onlytp.add": "＋ 新增",
+  "gui.onlytp.save": "儲存",
+  "gui.onlytp.cancel": "取消",
+  "gui.onlytp.view_only": "§c僅檢視，你沒有編輯權限",
+  "gui.onlytp.can_edit": "§a你擁有編輯權限",
+  "gui.onlytp.already_in_blacklist": "§c該玩家已在黑名單中",
+  "gui.onlytp.click_to_remove": "§c點擊刪除",
+  "message.onlytp.blocked_gamemode": "§c管理員禁止使用遊戲模式切換！",
+  "message.onlytp.blocked": "§c該指令已被管理員禁止！僅允許使用 TP 類指令。",
+  "message.onlytp.avalon_missing": "Only TP：安裝AvalonBase啟用視覺化編輯。此提示可在配置檔案中關閉。",
+
+  "gui.onlytp.toggle_label": "介面設定：",
+  "gui.onlytp.toggle_show_button": "顯示暫停按鈕",
+  "gui.onlytp.toggle_vanilla_texture": "原版風格紋理"
+}
