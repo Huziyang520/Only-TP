@@ -1,0 +1,39 @@
+license = "${license}"
+[[mods]]
+modId = "${mod_id}"
+version = "${version}"
+displayName = "${mod_name}"
+# displayURL / issueTrackerURL / iconFile are mod-specific and MUST live in
+# the [[mods]] table; placed at the top level NeoForge silently ignores them
+# and the mod-list homepage button stays disabled.
+# 26.2+ NeoForge splits the mod-list artwork into two slots: iconFile (square
+# 1:1 icon shown in the LEFT list) and bannerFile (wide banner shown on the
+# RIGHT detail page). We only ship a 1:1 icon, so use iconFile -- using the
+# deprecated logoFile would render the square icon in the RIGHT banner slot.
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/only-tp"
+issueTrackerURL = "https://github.com/Huziyang520/Only-TP/issues"
+iconFile = "assets/onlytp/textures/onlytp.png"
+authors = "${mod_author}"
+description = '''
+[EN] Restrict players to TP-related commands only, or block all non-TP commands.
+[CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。
+'''
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+# AvalonBase 前置（支持库）
+modId = "avalonbase"
+type = "optional"
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
