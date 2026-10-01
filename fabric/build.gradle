@@ -1,0 +1,48 @@
+plugins {
+    id 'multiloader-loader'
+    id 'fabric-loom'
+}
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 fabric.mod.json 声明前置
+    // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 fabric.mod.json 保证）
+    modImplementation fileTree(project.file("../../../AvalonBase/1.20.1/fabric/build/libs")) {
+        include "avalonbase-fabric-1.20.1-*.jar"
+        exclude "*-sources.jar"
+        exclude "*-javadoc.jar"
+    }
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+
+    // nightconfig（TOML）：Fabric 不自带，需显式引入并打包进 jar
+    include implementation("com.electronwill.night-config:core:3.6.4")
+    include implementation("com.electronwill.night-config:toml:3.6.4")
+}
+
+loom {
+    if (project(":common").file("src/main/resources/${mod_id}.accesswidener").exists()) {
+        accessWidenerPath.set(project(":common").file("src/main/resources/${mod_id}.accesswidener"))
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+    }
+}
