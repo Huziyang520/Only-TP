@@ -1,0 +1,41 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.fabricmc.fabric-loom'
+}
+dependencies {
+    minecraft("com.mojang:minecraft:${minecraft_version}")
+    implementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+
+    // AvalonBase 前置支持库：运行时作为 mod 依赖
+    implementation fileTree(project.file("../../../AvalonBase/26.1.2/fabric/build/libs")) {
+        include "avalonbase-fabric-26.1.2-*.jar"
+        exclude "*-sources.jar"
+        exclude "*-javadoc.jar"
+    }
+
+    // nightconfig（TOML）：Fabric 不自带，需显式引入并打包进 jar
+    include implementation("com.electronwill.night-config:core:3.6.4")
+    include implementation("com.electronwill.night-config:toml:3.6.4")
+}
+loom {
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+    }
+}

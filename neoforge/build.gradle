@@ -1,0 +1,50 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev'
+}
+neoForge {
+    version = neoforge_version
+    // Automatically enable neoforge AccessTransformers if the file exists
+    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
+    }
+    runs {
+        configureEach {
+            systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
+            ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
+        }
+        client {
+            client()
+            programArguments.addAll '--username', 'Dev'
+            gameDirectory = this.mkdir(this.file('runs/client'))
+        }
+        data {
+            clientData()
+            gameDirectory = this.mkdir(this.file('runs/data'))
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+        server {
+            server()
+            gameDirectory = this.mkdir(this.file('runs/server'))
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+dependencies {
+    // AvalonBase 前置支持库：运行时作为 mod 依赖
+    implementation fileTree(project.file("../../../AvalonBase/26.1.2/neoforge/build/libs")) {
+        include "avalonbase-neoforge-26.1.2-*.jar", "AvalonBase-neoforge-26.1.2-*.jar"
+        exclude "*-sources.jar"
+        exclude "*-javadoc.jar"
+    }
+    // nightconfig（TOML）：NeoForge 运行时自带，编译期显式声明以解析 common 的引用
+    compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'
+    compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
+}
