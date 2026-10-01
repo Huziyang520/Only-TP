@@ -1,0 +1,31 @@
+modLoader = "javafml" #mandatory
+loaderVersion = "[43,)" #mandatory This is typically bumped every Minecraft version by Forge. See https://files.minecraftforge.net/ for a list of versions.
+license = "MIT" # Review your options at https://choosealicense.com/.
+issueTrackerURL = "https://github.com/Huziyang520/Only-TP/issues" #optional
+[[mods]] #mandatory
+modId = "onlytp" #mandatory
+version = "1.3.0" #mandatory
+displayName = "Only TP" #mandatory
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/only-tp" #optional
+logoFile = "onlytp_logo.png" #optional
+authors = "Huziyang520" #optional
+description = '''Restrict players to using only TP-related commands, or completely disable non-TP commands. 
+Issues: https://github.com/Huziyang520/Only-TP/issues | https://issue.mengcai.online/''' #mandatory (Supports multiline text)
+[[dependencies.onlytp]] #optional
+modId = "forge" #mandatory
+mandatory = true #mandatory
+versionRange = "[43,)" #mandatory
+ordering = "NONE" # The order that this dependency should load in relation to your mod, required to be either 'BEFORE' or 'AFTER' if the dependency is not mandatory
+side = "BOTH" # Side this dependency is applied on - 'BOTH', 'CLIENT' or 'SERVER'
+[[dependencies.onlytp]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.2, 1.20)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.onlytp]]
+modId = "avalonbase"
+mandatory = false
+versionRange = "[1.0.0,)"
+ordering = "BEFORE"
+side = "BOTH"

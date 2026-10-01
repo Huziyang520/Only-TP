@@ -1,0 +1,49 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :buildSrc:extractPluginRequests UP-TO-DATE
+> Task :buildSrc:generatePluginAdapters UP-TO-DATE
+> Task :buildSrc:compileJava UP-TO-DATE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:compileGroovyPlugins UP-TO-DATE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :common
+Fabric Loom: 1.9.2
+
+> Configure project :fabric
+Fabric Loom: 1.9.2
+
+> Task :common:compileJava UP-TO-DATE
+> Task :forge:compileJava UP-TO-DATE
+> Task :forge:processResources UP-TO-DATE
+> Task :forge:classes UP-TO-DATE
+> Task :forge:jar
+> Task :forge:javadoc UP-TO-DATE
+> Task :forge:javadocJar UP-TO-DATE
+> Task :forge:downloadMcpConfig
+> Task :forge:extractSrg UP-TO-DATE
+> Task :forge:createMcpToSrg UP-TO-DATE
+> Task :forge:reobfJar
+> Task :forge:jarJar SKIPPED
+> Task :forge:reobfJarJar SKIPPED
+> Task :forge:sourcesJar UP-TO-DATE
+> Task :forge:assemble
+> Task :forge:compileTestJava NO-SOURCE
+> Task :forge:processTestResources NO-SOURCE
+> Task :forge:testClasses UP-TO-DATE
+> Task :forge:test NO-SOURCE
+> Task :forge:check UP-TO-DATE
+> Task :forge:build
+[Incubating] Problems report is available at: file:///D:/%E6%B5%8F%E8%A7%88%E5%99%A8/Mymods/Only%20TP%20Re/Only%20TP/1.19.2/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.11/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 36s
+18 actionable tasks: 3 executed, 15 up-to-date
