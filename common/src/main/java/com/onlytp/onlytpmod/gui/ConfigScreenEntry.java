@@ -6,6 +6,7 @@ import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 
 import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
@@ -40,8 +41,12 @@ public final class ConfigScreenEntry {
         }
         try {
             if (mc.player != null) {
-                // In a world: showPauseButton is the value synced from the server.
-                if (!OnlyTPConfig.showPauseButton) {
+                // 世界内：入口只由「是否拥有编辑权限（OP）」决定，不再由 show_pause_button 决定。
+                // 否则把 show_pause_button 关掉后，世界内既没有暂停页按钮、模组列表入口也会被拒，
+                // 形成无法回退的单向闩锁（开关由 false 改回 true 时游戏内无法再打开编辑器）。
+                // show_pause_button 回归其字面含义：只控制暂停页那一个按钮的显示。
+                boolean canEdit = mc.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+                if (!canEdit) {
                     return newAccessDenied(parent);
                 }
                 return newEditor(parent, false);

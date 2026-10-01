@@ -33,8 +33,14 @@ public class OnlyTPConfig {
     // OP 命令白名单：仅对 block_non_tp 模式的 OP 玩家生效，命中则放行（可用则用）。
     // 仅能通过 config/onlytp.toml 的 [command_whitelist] 修改，不进 GUI。
     public static List<String> commandWhitelistOp = defaultOpWhitelist();
-    // 白名单热加载：记录配置文件最后修改时间，文件变更时在下次命令判定时自动重读
+    // 配置热加载：记录配置文件最后修改时间，文件变更时在下次判定时自动重读
     private static volatile long whitelistLastModified = -1L;
+
+    /**
+     * 热加载确认配置文件被外部修改后，由平台入口注入的回调：向在线玩家重播配置同步包。
+     * config 层无服务端引用，用回调解耦（与 AuthCmdConfig#setConfigBroadcaster 同思路）。
+     */
+    private static volatile Runnable configChangedListener;
 
     public static final String MODE_ALLOW_TP = "allow_tp_only";
     public static final String MODE_BLOCK_NON_TP = "block_non_tp";
@@ -176,24 +182,32 @@ public class OnlyTPConfig {
     }
 
     /**
-     * 热加载白名单：检查配置文件是否被外部修改，若变更则重新读取 [command_whitelist] 表。
-     * 通过比对文件最后修改时间实现，避免每次命令判定都重新读盘。
+     * 热加载配置：检查配置文件是否被外部修改，若变更则<b>全量重读</b>。
+     * 通过比对文件最后修改时间实现，避免每次判定都重新读盘。
+     *
+     * <p>早期实现只重读 {@code [command_whitelist]}，导致 {@code show_pause_button}
+     * 这类非命令类开关无法热生效（表现为"由 true 改 false 立刻消失、由 false 改 true 不回来"）。
+     * 现改为整表重读，并在变更后触发 {@link #configChangedListener} 让服务端把配置重播给在线客户端。
      */
     public static void reloadWhitelistIfChanged() {
         try {
             long modified = Files.getLastModifiedTime(CONFIG_PATH).toMillis();
             if (modified == whitelistLastModified) return; // 未变更，直接返回
-            whitelistLastModified = modified;
-            String text = Files.readString(CONFIG_PATH);
-            Config cfg = new TomlParser().parse(text);
-            // 表不存在时回退默认值，表存在则采用配置（即使为空也尊重）
-            commandWhitelistOp = cfg.contains("command_whitelist")
-                    ? getSubList(cfg, "command_whitelist")
-                    : defaultOpWhitelist();
-            LOGGER.info("Command whitelist hot-reloaded: {}", commandWhitelistOp);
+            readFile(); // 全量重读（含 command_whitelist / show_pause_button / gui_button_style / mode 等）
+            LOGGER.info("Config hot-reloaded - whitelist: {}, showPauseButton: {}, guiButtonStyle: {}",
+                    commandWhitelistOp, showPauseButton, guiButtonStyle);
+            Runnable listener = configChangedListener;
+            if (listener != null) listener.run();
         } catch (Exception e) {
-            LOGGER.error("Failed to hot-reload command whitelist", e);
+            LOGGER.error("Failed to hot-reload config", e);
         }
+    }
+
+    /**
+     * 注入配置热加载回调。仅服务端入口在服务器启动后调用一次；纯客户端场景留空。
+     */
+    public static void setConfigChangedListener(Runnable listener) {
+        configChangedListener = listener;
     }
 
     /**

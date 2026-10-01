@@ -27,6 +27,13 @@ public class OnlyTPMod implements ModInitializer {
         // 服务端启动时初始化配置（对应原版 ServerStartingEvent）
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             OnlyTPConfig.init();
+            // 手改 TOML 热加载后：重播配置（show_pause_button 等开关即时生效）+ 重发命令树（补全更新）
+            OnlyTPConfig.setConfigChangedListener(() -> {
+                PlayerJoinLogic.syncToAll(server);
+                for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+                    server.getCommands().sendCommands(p);
+                }
+            });
             LOGGER.info("Only TP config initialized");
         });
 

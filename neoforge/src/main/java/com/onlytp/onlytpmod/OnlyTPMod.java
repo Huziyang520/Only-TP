@@ -7,6 +7,7 @@ import com.onlytp.onlytpmod.event.CommandLogic;
 import com.onlytp.onlytpmod.event.GameModeLogic;
 import com.onlytp.onlytpmod.event.GuiEventHandler;
 import com.onlytp.onlytpmod.event.PlayerJoinLogic;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -46,6 +47,14 @@ public class OnlyTPMod {
     @SubscribeEvent
     public void onServerStarting(final ServerStartingEvent event) {
         OnlyTPConfig.init();
+        MinecraftServer server = event.getServer();
+        // 手改 TOML 热加载后：重播配置（show_pause_button 等开关即时生效）+ 重发命令树（补全更新）
+        OnlyTPConfig.setConfigChangedListener(() -> {
+            PlayerJoinLogic.syncToAll(server);
+            for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+                server.getCommands().sendCommands(p);
+            }
+        });
         LOGGER.info("Only TP config initialized");
     }
 
