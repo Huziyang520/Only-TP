@@ -58,6 +58,15 @@ public class OnlyTPMod {
         LOGGER.info("Only TP config initialized");
     }
 
+    /**
+     * 服务端每 tick 检查配置热加载：手改 config/onlytp.toml 后无需命令 / 进服等触发即可重播给在线玩家。
+     * 内部有 1s 节流，实际每 tick 只做一次毫秒比较。
+     */
+    @SubscribeEvent
+    public void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+        OnlyTPConfig.reloadIfChanged();
+    }
+
     @SubscribeEvent
     public void onCommand(CommandEvent event) {
         if (CommandLogic.shouldCancel(event.getParseResults())) {

@@ -7,6 +7,7 @@ import com.onlytp.onlytpmod.event.PlayerJoinLogic;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
@@ -36,6 +37,9 @@ public class OnlyTPMod implements ModInitializer {
             });
             LOGGER.info("Only TP config initialized");
         });
+
+        // 服务端每 tick 检查配置热加载：手改 config/onlytp.toml 后无需命令 / 进服等触发即可重播给在线玩家
+        ServerTickEvents.END_SERVER_TICK.register(server -> OnlyTPConfig.reloadIfChanged());
 
         // 命令注册后 patch tp/teleport 的 requirement（对应原版 RegisterCommandsEvent）
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

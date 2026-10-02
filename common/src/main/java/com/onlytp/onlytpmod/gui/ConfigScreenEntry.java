@@ -40,6 +40,8 @@ public final class ConfigScreenEntry {
         }
         try {
             if (mc.player != null) {
+                // 世界内入口同样先热加载（仅主机场景），保证手改 toml 后入口立即反映
+                if (mc.hasSingleplayerServer()) OnlyTPConfig.reloadIfChanged();
                 // 世界内：入口由 show_pause_button 判定（服务端下发的值），false 时对**所有人（含 OP）**
                 // 都出无权限小窗——保持与服务端"关闭编辑入口"的口径一致。
                 // 恢复途径是改 config/onlytp.toml 触发热加载（整表重读 + SYNC 重播）或重启服务端。

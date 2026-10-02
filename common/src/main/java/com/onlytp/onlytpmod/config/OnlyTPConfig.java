@@ -42,6 +42,18 @@ public class OnlyTPConfig {
      */
     private static volatile Runnable configChangedListener;
 
+    /**
+     * 是否已初始化（用于热加载判定）。仅服务端入口（含单机集成服务端）调用 {@link #init()} 时置位；
+     * 联机客户端不置位，从而不会去读本地 toml 覆盖服务端 SYNC 下来的值。
+     */
+    private static volatile boolean initialized = false;
+
+    /** 热加载最小检查间隔（毫秒）。消费点（暂停页注入 / 入口判定）与每 tick 检查都可能调用，需节流。 */
+    private static final long RELOAD_CHECK_INTERVAL_MS = 1000L;
+
+    /** 上次真正执行文件 stat 的时刻。 */
+    private static volatile long lastCheckTime = 0L;
+
     public static final String MODE_ALLOW_TP = "allow_tp_only";
     public static final String MODE_BLOCK_NON_TP = "block_non_tp";
     public static final String MODE_BOTH = "both";
@@ -60,6 +72,7 @@ public class OnlyTPConfig {
             LOGGER.error("Fatal config error", e);
             resetDefaults();
         }
+        initialized = true;
     }
 
     public static void readFile() {
@@ -189,7 +202,11 @@ public class OnlyTPConfig {
      * 这类非命令类开关无法热生效（表现为"由 true 改 false 立刻消失、由 false 改 true 不回来"）。
      * 现改为整表重读，并在变更后触发 {@link #configChangedListener} 让服务端把配置重播给在线客户端。
      */
-    public static void reloadWhitelistIfChanged() {
+    public static void reloadIfChanged() {
+        if (!initialized) return; // 联机客户端：配置以服务端 SYNC 为准，不读本地 toml
+        long now = System.currentTimeMillis();
+        if (now - lastCheckTime < RELOAD_CHECK_INTERVAL_MS) return;
+        lastCheckTime = now;
         try {
             long modified = Files.getLastModifiedTime(CONFIG_PATH).toMillis();
             if (modified == whitelistLastModified) return; // 未变更，直接返回
@@ -201,6 +218,13 @@ public class OnlyTPConfig {
         } catch (Exception e) {
             LOGGER.error("Failed to hot-reload config", e);
         }
+    }
+
+    /**
+     * 旧名保留（命令判定路径调用），语义等同 {@link #reloadIfChanged()}。
+     */
+    public static void reloadWhitelistIfChanged() {
+        reloadIfChanged();
     }
 
     /**
