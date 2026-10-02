@@ -6,7 +6,6 @@ import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permissions;
 
 import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
@@ -41,12 +40,10 @@ public final class ConfigScreenEntry {
         }
         try {
             if (mc.player != null) {
-                // 世界内：入口只由「是否拥有编辑权限（OP）」决定，不再由 show_pause_button 决定。
-                // 否则把 show_pause_button 关掉后，世界内既没有暂停页按钮、模组列表入口也会被拒，
-                // 形成无法回退的单向闩锁（开关由 false 改回 true 时游戏内无法再打开编辑器）。
-                // show_pause_button 回归其字面含义：只控制暂停页那一个按钮的显示。
-                boolean canEdit = mc.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
-                if (!canEdit) {
+                // 世界内：入口由 show_pause_button 判定（服务端下发的值），false 时对**所有人（含 OP）**
+                // 都出无权限小窗——保持与服务端"关闭编辑入口"的口径一致。
+                // 恢复途径是改 config/onlytp.toml 触发热加载（整表重读 + SYNC 重播）或重启服务端。
+                if (!OnlyTPConfig.showPauseButton) {
                     return newAccessDenied(parent);
                 }
                 return newEditor(parent, false);
