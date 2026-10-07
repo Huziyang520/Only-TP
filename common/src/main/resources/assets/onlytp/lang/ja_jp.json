@@ -20,9 +20,13 @@
   "gui.onlytp.already_in_blacklist": "そのプレイヤーはすでに免除リストにいます",
   "gui.onlytp.click_to_remove": "§cクリックして削除",
   "message.onlytp.blocked_gamemode": "管理者によりゲームモードの切り替えが禁止されています！",
-  "message.onlytp.blocked": "このコマンドは管理者により禁止されています！TP系コマンドのみ許可されています。",
+  "message.onlytp.blocked": "Only TP: このコマンドは禁止されています！",
   "message.onlytp.avalon_missing": "Only TP：AvalonBaseを導入すると視覚的な編集が有効になります。この通知は設定ファイルで無効にできます。",
-  "gui.onlytp.toggle_label": "UI設定：",
+  "gui.onlytp.toggle_label": "設定：",
+  "gui.onlytp.allow_entity_selectors": "ターゲットセレクターを許可",
   "gui.onlytp.toggle_show_button": "一時停止ボタンを表示",
-  "gui.onlytp.toggle_vanilla_texture": "バニラ風テクスチャ"
+  "gui.onlytp.toggle_vanilla_texture": "バニラ風テクスチャ",
+  "gui.onlytp.enable_animations": "インターフェースのアニメーションを有効化",
+"onlytp.feedback": "予備のフィードバック先",
+"message.onlytp.selector_blocked": "Only TP: ターゲットセレクターは使用できません！"
 }

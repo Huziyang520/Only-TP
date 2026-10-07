@@ -1,6 +1,9 @@
 package com.onlytp.onlytpmod.gui.dialog;
 
+import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.gui.ButtonFrames;
+import com.avalon.base.gui.anim.ScreenAnim;
+import com.avalon.base.gui.anim.ScreenAnimType;
 import com.avalon.base.gui.theme.GuiTheme;
 import com.avalon.base.gui.theme.ModernTheme;
 import com.avalon.base.gui.theme.ThemedButton;
@@ -37,7 +40,6 @@ abstract class EnderDialog extends Screen {
     private static final int TITLE_Y = 9;
     private static final int TEXT_Y = 27;
     private static final int LINE_H = 11;
-    private static final int BACKDROP_COLOR = 0xC0101010;
 
     protected final Screen parentScreen;
     protected final GuiTheme theme;
@@ -49,11 +51,19 @@ abstract class EnderDialog extends Screen {
 
     private final Component bodyText;
 
+    /** 二级界面的开/关动画（默认「弹入」POP_ZOOM）；「启用动画效果」关闭时完全无动画。 */
+    private final ScreenAnim anim;
+    private boolean closeDone;
+
     protected EnderDialog(Screen parent, Component title, Component body, GuiTheme theme) {
         super(title);
         this.parentScreen = parent;
         this.bodyText = body;
         this.theme = theme;
+        this.anim = OnlyTPConfig.enableAnimations
+                ? new ScreenAnim(ScreenAnimType.SCALE_BOUNCE, ScreenAnimType.SCALE_BOUNCE)
+                : ScreenAnim.disabled();
+        this.anim.playOpen();
     }
 
     /** Minimum panel height regardless of the wrapped text length. */
@@ -93,18 +103,29 @@ abstract class EnderDialog extends Screen {
     }
 
     protected void backToParent() {
+        if (closeDone) return; // 关闭动画收尾与 tick 可能同时到达，保证只切屏一次
+        closeDone = true;
         if (minecraft != null) {
             minecraft.setScreenAndShow(parentScreen);
         }
     }
 
+    /**
+     * 背景通道：交给原版（主菜单 = 全景图 + 模糊 + 菜单背景贴图；世界内 = 模糊 + 半透明暗底）。
+     * 旧实现整屏铺 {@code 0xC0101010} 近不透明深色，在主菜单里会把菜单背景整个盖住。
+     * 该背景位于动画变换之外，动画期间整屏始终是暗的，不会出现"弹窗变小、四周露出一圈更亮"的分层。
+     */
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
-        g.fill(0, 0, this.width, this.height, BACKDROP_COLOR);
+        super.extractBackground(g, mouseX, mouseY, delta);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
+        // 描边/命中都用动画坐标系（整块面板会被缩放，坐标必须跟着换）
+        mouseX = (int) anim.localX(mouseX, width);
+        mouseY = (int) anim.localY(mouseY, height);
+        anim.beginFrame(g, width, height);
         theme.drawPanel(g, left, top, panelW, panelH);
         g.centeredText(font, getTitle(), left + panelW / 2, top + TITLE_Y, theme.titleColor());
         int y = top + TEXT_Y;
@@ -119,6 +140,8 @@ abstract class EnderDialog extends Screen {
         if (theme instanceof ModernTheme modern) {
             ButtonFrames.render(g, this, modern.palette());
         }
+        anim.endFrame(g, width, height);
+        if (anim.isCloseFinished()) backToParent();
     }
 
     @Override
@@ -128,6 +151,14 @@ abstract class EnderDialog extends Screen {
 
     @Override
     public void onClose() {
+        // 有关闭动画 → 先播动画，播完再回父界面
+        if (anim.beginClose()) return;
         backToParent();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (anim.isCloseFinished()) backToParent();
     }
 }

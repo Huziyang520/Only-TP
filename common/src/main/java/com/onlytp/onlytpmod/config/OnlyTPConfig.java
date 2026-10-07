@@ -22,7 +22,11 @@ public class OnlyTPConfig {
     private static final Path CONFIG_PATH = Paths.get("config", "onlytp.toml");
 
     public static String mode = "disabled";
+    // 非OP提权指令是否允许使用目标选择器（@a/@p/@e 等）；关闭 = 客户端不补全、服务端拒绝提权执行
+    public static boolean allowEntitySelectors = true;
     public static boolean showPauseButton = true;
+    // 界面是否播放开/关动画（AvalonBase 动画 API；默认开启）
+    public static boolean enableAnimations = true;
     public static int guiButtonStyle = 0; // 0=简约风, 1=原版风
     // 客户端进入世界时若未装 AvalonBase，是否显示「安装AvalonBase启用可视化编辑」提示。0=关闭, 1=开启(默认)
     public static int showTips = 1;
@@ -80,8 +84,10 @@ public class OnlyTPConfig {
             String text = Files.readString(CONFIG_PATH);
             Config cfg = new TomlParser().parse(text);
             mode = cfg.getOrElse("mode", MODE_DISABLED);
+            allowEntitySelectors = cfg.getOrElse("allow_entity_selectors", true);
             showPauseButton = cfg.getOrElse("show_pause_button", true);
             guiButtonStyle = cfg.getOrElse("gui_button_style", 0);
+            enableAnimations = cfg.getOrElse("enable_animations", true);
             showTips = cfg.getOrElse("show_tips", 1);
             showLocalConfigNotice = cfg.getOrElse("show_local_config_notice", 1);
             blacklistAllowTp = getSubList(cfg, "mode_allow_tp_only");
@@ -101,9 +107,13 @@ public class OnlyTPConfig {
     public static void writeFile() {
         try {
             Config cfg = Config.inMemory();
+            // 写盘顺序即文件里的顺序：模式与行为 → 界面 → 提示 → 名单子表
+            // （子表必须放在所有标量之后，否则 TOML 会把先写的标量并进子表）
             cfg.set("mode", mode);
+            cfg.set("allow_entity_selectors", allowEntitySelectors);
             cfg.set("show_pause_button", showPauseButton);
             cfg.set("gui_button_style", guiButtonStyle);
+            cfg.set("enable_animations", enableAnimations);
             cfg.set("show_tips", showTips);
             cfg.set("show_local_config_notice", showLocalConfigNotice);
             setSubList(cfg, "mode_allow_tp_only", blacklistAllowTp);
@@ -148,8 +158,10 @@ public class OnlyTPConfig {
 
     private static void resetDefaults() {
         mode = MODE_DISABLED;
+        allowEntitySelectors = true;
         showPauseButton = true;
         guiButtonStyle = 0;
+        enableAnimations = true;
         showTips = 1;
         showLocalConfigNotice = 1;
         blacklistAllowTp = new ArrayList<>();

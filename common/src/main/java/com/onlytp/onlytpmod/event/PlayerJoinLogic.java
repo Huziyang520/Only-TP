@@ -24,7 +24,8 @@ public class PlayerJoinLogic {
         if (!AvalonLink.isAvalonLoaded()) return;
         try {
             Object sync = new ConfigSyncPacket(
-                    OnlyTPConfig.mode, OnlyTPConfig.showPauseButton, OnlyTPConfig.guiButtonStyle,
+                    OnlyTPConfig.mode, OnlyTPConfig.allowEntitySelectors, OnlyTPConfig.showPauseButton, OnlyTPConfig.enableAnimations,
+                    OnlyTPConfig.guiButtonStyle,
                     OnlyTPConfig.blacklistAllowTp, OnlyTPConfig.blacklistBlockNonTp);
             Class<?> clazz = Class.forName("com.avalon.base.network.AvalonNetwork");
             clazz.getMethod("sendToPlayer", ServerPlayer.class, Identifier.class, Object.class)
@@ -45,7 +46,8 @@ public class PlayerJoinLogic {
         if (!AvalonLink.isAvalonLoaded()) return;
         try {
             Object sync = new ConfigSyncPacket(
-                    OnlyTPConfig.mode, OnlyTPConfig.showPauseButton, OnlyTPConfig.guiButtonStyle,
+                    OnlyTPConfig.mode, OnlyTPConfig.allowEntitySelectors, OnlyTPConfig.showPauseButton, OnlyTPConfig.enableAnimations,
+                    OnlyTPConfig.guiButtonStyle,
                     OnlyTPConfig.blacklistAllowTp, OnlyTPConfig.blacklistBlockNonTp);
             Class<?> clazz = Class.forName("com.avalon.base.network.AvalonNetwork");
             clazz.getMethod("sendToAll", MinecraftServer.class, Identifier.class, Object.class)

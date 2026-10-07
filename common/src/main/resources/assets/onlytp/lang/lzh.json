@@ -20,9 +20,13 @@
   "gui.onlytp.already_in_blacklist": "此遊者已在宥免名籍之中",
   "gui.onlytp.click_to_remove": "§c擊之以刪",
   "message.onlytp.blocked_gamemode": "司牧禁戲法之易！",
-  "message.onlytp.blocked": "此敕令已為司牧所禁！唯許TP之敕令。",
+  "message.onlytp.blocked": "Only TP：此敕令已禁。",
   "message.onlytp.avalon_missing": "Only TP：裝AvalonBase乃可視化編修。此告示可於設置之卷中關之。",
-  "gui.onlytp.toggle_label": "界面設置：",
+  "gui.onlytp.toggle_label": "設置：",
+  "gui.onlytp.allow_entity_selectors": "許用擇取標的",
   "gui.onlytp.toggle_show_button": "示暫止之鈕",
-  "gui.onlytp.toggle_vanilla_texture": "循原版之紋理"
+  "gui.onlytp.toggle_vanilla_texture": "循原版之紋理",
+  "gui.onlytp.enable_animations": "啟畫動之效",
+"onlytp.feedback": "備用之奏報處",
+"message.onlytp.selector_blocked": "Only TP：不許擇取標的！"
 }

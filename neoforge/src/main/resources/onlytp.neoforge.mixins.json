@@ -2,14 +2,10 @@
     "required": true,
     "minVersion": "0.8",
     "package": "com.onlytp.onlytpmod.mixin",
-    "refmap": "${mod_id}.refmap.json",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "CommandsMixin",
-        "ServerPlayerMixin"
     ],
     "client": [
-        "ScreenAccessor",
         "ClientSuggestionProviderMixin"
     ],
     "server": [

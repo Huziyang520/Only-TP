@@ -20,9 +20,13 @@
   "gui.onlytp.already_in_blacklist": "Le joueur est déjà dans la liste des exemptés",
   "gui.onlytp.click_to_remove": "§cCliquer pour supprimer",
   "message.onlytp.blocked_gamemode": "Le changement de mode de jeu est désactivé par l'administrateur !",
-  "message.onlytp.blocked": "Cette commande a été désactivée par l'administrateur ! Seules les commandes TP sont autorisées.",
+  "message.onlytp.blocked": "Only TP: Cette commande a été désactivée !",
   "message.onlytp.avalon_missing": "Only TP : installez AvalonBase pour activer l'édition visuelle. Ce message peut être désactivé dans le fichier de configuration.",
-  "gui.onlytp.toggle_label": "Interface :",
+  "gui.onlytp.toggle_label": "Paramètres :",
+  "gui.onlytp.allow_entity_selectors": "Autoriser les sélecteurs de cible",
   "gui.onlytp.toggle_show_button": "Afficher le bouton pause",
-  "gui.onlytp.toggle_vanilla_texture": "Texture de style vanilla"
+  "gui.onlytp.toggle_vanilla_texture": "Texture de style vanilla",
+  "gui.onlytp.enable_animations": "Activer les animations de l'interface",
+"onlytp.feedback": "Adresse de retour alternative",
+"message.onlytp.selector_blocked": "Only TP: Les sélecteurs de cible ne sont pas autorisés !"
 }

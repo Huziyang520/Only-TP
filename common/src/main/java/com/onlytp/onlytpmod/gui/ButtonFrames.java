@@ -20,13 +20,20 @@ public final class ButtonFrames {
     private ButtonFrames() {
     }
 
-    /** Outline every active themed button on the screen; inactive buttons stay frameless. */
+    /**
+     * Outline every themed button on the screen, active or not.
+     *
+     * <p>Inactive buttons used to be skipped, which made a disabled button (for example the
+     * "Add" button while the input box is empty) look like it had no border at all. The
+     * border is now always drawn; only an active, hovered button is highlighted with the
+     * accent colour, so a disabled button stays visually "flat" but still framed.
+     */
     public static void render(GuiGraphicsExtractor g, Screen screen, Palette palette) {
         for (var child : screen.children()) {
-            if (!(child instanceof ThemedButton btn) || !btn.active) {
+            if (!(child instanceof ThemedButton btn)) {
                 continue;
             }
-            int frame = btn.isHoveredOrFocused() ? palette.accent : palette.border;
+            int frame = btn.active && btn.isHoveredOrFocused() ? palette.accent : palette.border;
             int x = btn.getX();
             int y = btn.getY();
             int w = btn.getWidth();

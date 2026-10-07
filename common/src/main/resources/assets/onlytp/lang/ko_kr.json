@@ -20,9 +20,13 @@
   "gui.onlytp.already_in_blacklist": "해당 플레이어는 이미 면제 목록에 있습니다",
   "gui.onlytp.click_to_remove": "§c클릭하여 삭제",
   "message.onlytp.blocked_gamemode": "관리자가 게임 모드 전환을 금지했습니다!",
-  "message.onlytp.blocked": "관리자가 이 명령을 금지했습니다! TP 계열 명령만 허용됩니다.",
+  "message.onlytp.blocked": "Only TP: 이 명령은 금지되었습니다!",
   "message.onlytp.avalon_missing": "Only TP: AvalonBase를 설치하면 시각적 편집을 사용할 수 있습니다. 이 알림은 설정 파일에서 끌 수 있습니다.",
-  "gui.onlytp.toggle_label": "UI 설정:",
+  "gui.onlytp.toggle_label": "설정:",
+  "gui.onlytp.allow_entity_selectors": "대상 선택기 허용",
   "gui.onlytp.toggle_show_button": "일시정지 버튼 표시",
-  "gui.onlytp.toggle_vanilla_texture": "바닐라 스타일 텍스처"
+  "gui.onlytp.toggle_vanilla_texture": "바닐라 스타일 텍스처",
+  "gui.onlytp.enable_animations": "인터페이스 애니메이션 사용",
+"onlytp.feedback": "대체 피드백 주소",
+"message.onlytp.selector_blocked": "Only TP: 대상 선택기는 허용되지 않습니다!"
 }

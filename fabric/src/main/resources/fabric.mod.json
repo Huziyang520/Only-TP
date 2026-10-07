@@ -40,6 +40,11 @@
     "custom": {
         "catalogue": {
             "configFactory": "com.onlytp.onlytpmod.client.CatalogueConfigEntry"
-        }
+        },
+        "modmenu": {
+            "links": {
+                "onlytp.feedback": "https://issue.mengcai.online/"
+                }
+            }
     }
 }

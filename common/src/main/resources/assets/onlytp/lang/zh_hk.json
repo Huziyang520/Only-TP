@@ -20,9 +20,13 @@
   "gui.onlytp.already_in_blacklist": "該玩家已在豁免名單中",
   "gui.onlytp.click_to_remove": "§c點擊刪除",
   "message.onlytp.blocked_gamemode": "管理員禁止使用遊戲模式切換！",
-  "message.onlytp.blocked": "該指令已被管理員禁止！只可使用 TP 類指令。",
+  "message.onlytp.blocked": "Only TP: 該指令已被禁止！",
   "message.onlytp.avalon_missing": "Only TP：安裝AvalonBase以啟用可視化編輯。此提示可在設定檔中關閉。",
-  "gui.onlytp.toggle_label": "介面設定：",
+  "gui.onlytp.toggle_label": "設定：",
+  "gui.onlytp.allow_entity_selectors": "允許目標選擇器",
   "gui.onlytp.toggle_show_button": "顯示暫停按鈕",
-  "gui.onlytp.toggle_vanilla_texture": "原版風格材質"
+  "gui.onlytp.toggle_vanilla_texture": "原版風格材質",
+  "gui.onlytp.enable_animations": "啟用動畫效果",
+"onlytp.feedback": "備用回饋地址",
+"message.onlytp.selector_blocked": "Only TP: 不允許使用目標選擇器！"
 }

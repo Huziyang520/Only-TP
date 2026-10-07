@@ -1,5 +1,8 @@
 package com.onlytp.onlytpmod.gui;
 
+import com.avalon.base.gui.anim.ScreenAnim;
+import com.avalon.base.gui.anim.ScreenAnimType;
+import com.avalon.base.gui.anim.ScrollAnim;
 import com.avalon.base.gui.panel.PanelHover;
 import com.avalon.base.gui.theme.GuiTheme;
 import com.avalon.base.gui.theme.ModernTheme;
@@ -64,6 +67,8 @@ public class OnlyTPScreen extends Screen {
     private boolean localEdit;
     private int guiLeft, guiTop;
     private int blScroll;
+    /** 名单列表滚动的平滑动画：{@link #blScroll} 仍是“目标值”，显示位置取 {@link ScrollAnim#displayValue()}。 */
+    private final ScrollAnim blAnim = new ScrollAnim(0);
 
     // ─── 控件 ───
     private EditBox playerNameInput;
@@ -71,6 +76,17 @@ public class OnlyTPScreen extends Screen {
     private final ThemedRadio[] modeRadios = new ThemedRadio[4];
     private ThemedToggle showPauseToggle;
     private ThemedToggle styleToggle;
+    private ThemedToggle animToggle;
+    private ThemedToggle selectorToggle;
+
+    // ─── 开/关屏动画（AvalonBase 动画 API） ───
+    /** 「启用动画效果」的本地编辑值（保存时随配置下发；旧配置缺键 → 默认开启）。 */
+    private boolean localEnableAnimations;
+    /** 「允许目标选择器」的本地编辑值（保存时随配置下发；默认开启）。 */
+    private boolean localAllowSelectors;
+    private ScreenAnim anim = ScreenAnim.disabled();
+    /** 真正切屏是否已执行：关闭动画收尾与 tick 可能同时到达。 */
+    private boolean closeDone;
 
     // ─── 主题 & 动画 ───
     private GuiTheme theme;
@@ -94,6 +110,19 @@ public class OnlyTPScreen extends Screen {
         this.theme = localUseVanilla ? VANILLA_THEME : MODERN_THEME;
         this.blacklistAllowTp.addAll(OnlyTPConfig.blacklistAllowTp);
         this.blacklistBlockNonTp.addAll(OnlyTPConfig.blacklistBlockNonTp);
+        // 开/关屏动画（「下落弹跳」进、「下滑」出）；只在构造时起跑一次，
+        // 模式切换触发的 init() 重入不会重播开屏动画。
+        this.localEnableAnimations = OnlyTPConfig.enableAnimations;
+        this.localAllowSelectors = OnlyTPConfig.allowEntitySelectors;
+        applyAnimationConfig();
+        anim.playOpen();
+    }
+
+    /** 按当前开关重配动画器（不重播开屏动画；勾选框改动立刻影响本次关屏与下次开屏）。 */
+    private void applyAnimationConfig() {
+        anim = localEnableAnimations
+                ? new ScreenAnim(ScreenAnimType.SCALE_BOUNCE, ScreenAnimType.SCALE_BOUNCE)
+                : ScreenAnim.disabled();
     }
 
     // ═══════════ 布局方法 ═══════════
@@ -115,19 +144,28 @@ public class OnlyTPScreen extends Screen {
         canEdit = localEdit || (minecraft != null && minecraft.player != null
                 && minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER));
         blScroll = Math.max(0, blScroll);
+        blAnim.setTarget(blScroll);
 
         // ─── 模式单选（4个，12px行距，用勾选框样式） ───
+        // 与 AuthCmd 同口径：勾选框列 = 卡片左缘 + 6 内边距（模式卡 x=8、设置卡 x=154），
+        // 超宽标签按卡片宽截断（悬停出全文），保证四个选项一行一项、左右列都对齐。
         for (int i = 0; i < 4; i++) {
-            modeRadios[i] = new ThemedRadio(guiLeft + 16, 28 + i * 12,
+            modeRadios[i] = new ThemedRadio(guiLeft + 8 + 6, 28 + i * 12,
                     Component.translatable("gui.onlytp.mode_" + MODES[i]),
-                    MODES[i].equals(selectedMode), canEdit);
+                    MODES[i].equals(selectedMode), canEdit, 146 - 34);
         }
 
-        // ─── 开关 ───
-        showPauseToggle = new ThemedToggle(guiLeft + 162, 28,
-                Component.translatable("gui.onlytp.toggle_show_button"), localShowPause, canEdit, false);
-        styleToggle = new ThemedToggle(guiLeft + 162, 42,
-                Component.translatable("gui.onlytp.toggle_vanilla_texture"), localUseVanilla, canEdit, false);
+        // ─── 开关（同口径：卡片左缘 + 6；行距 12 与左列单选一一对齐：28 + i*12） ───
+        showPauseToggle = new ThemedToggle(guiLeft + 154 + 6, 28,
+                Component.translatable("gui.onlytp.toggle_show_button"), localShowPause, canEdit, false, 138 - 34);
+        styleToggle = new ThemedToggle(guiLeft + 154 + 6, 40,
+                Component.translatable("gui.onlytp.toggle_vanilla_texture"), localUseVanilla, canEdit, false, 138 - 34);
+        // 「设置」卡片第 3 行：界面动画开关（默认启用）
+        animToggle = new ThemedToggle(guiLeft + 154 + 6, 52,
+                Component.translatable("gui.onlytp.enable_animations"), localEnableAnimations, canEdit, false, 138 - 34);
+        // 「设置」卡片第 4 行：目标选择器开关（默认启用）
+        selectorToggle = new ThemedToggle(guiLeft + 154 + 6, 64,
+                Component.translatable("gui.onlytp.allow_entity_selectors"), localAllowSelectors, canEdit, false, 138 - 34);
 
         // ─── 黑名单输入（仅 allow_tp_only / block_non_tp） ───
         playerNameInput = null;
@@ -139,7 +177,9 @@ public class OnlyTPScreen extends Screen {
             playerNameInput.setResponder(s -> updateAddButtonState());
             addRenderableWidget(playerNameInput);
 
-            addButton = new ThemedButton(guiLeft + 237, yo(165), 55, 20,
+            // Right edge aligned with the "Cancel" button below (both end at guiLeft + GUI_WIDTH - 13),
+            // so the add button no longer sticks out 5px further right than the button row.
+            addButton = new ThemedButton(guiLeft + GUI_WIDTH - 68, yo(165), 55, 20,
                     Component.translatable("gui.onlytp.add"), b -> addPlayer(),
                     theme, GuiTheme.ButtonRole.PRIMARY, font);
             addButton.active = false;
@@ -167,13 +207,18 @@ public class OnlyTPScreen extends Screen {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        // 背景通道铺近不透明深色：26.2 若背景置空，打开本屏（暂停屏）时原版模糊暗背景需一帧才生效，
-        // 首帧会露出明亮游戏画面透过半透明层，造成"闪一下"。用不透明深色从背景趟就压暗画面。
-        graphics.fill(0, 0, this.width, this.height, 0xC0101010);
+        // 背景通道交给原版：主菜单 = 全景图 + 模糊 + 菜单背景贴图；世界内 = 模糊 + 半透明暗底。
+        // 旧实现整屏铺 0xC0101010 近不透明深色，在主菜单打开本屏时会把菜单背景整个盖住（"背景不透明"）。
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+
+        // 开/关屏动画：命中测试换成动画坐标系，整屏内容（含原版按钮/输入框）随变换一起动
+        mouseX = (int) anim.localX(mouseX, width);
+        mouseY = (int) anim.localY(mouseY, height);
+        anim.beginFrame(graphics, width, height);
 
         // 主面板背景
         int panelH = yo(CONTENT_MAX_Y) + 14 - (yo(CONTENT_MIN_Y) - 4);
@@ -195,6 +240,8 @@ public class OnlyTPScreen extends Screen {
                 guiLeft + cardRightX + 8, yo(18), theme.labelColor(), false);
         showPauseToggle.render(graphics, font, theme, yo(showPauseToggle.relY), mouseX, mouseY);
         styleToggle.render(graphics, font, theme, yo(styleToggle.relY), mouseX, mouseY);
+        animToggle.render(graphics, font, theme, yo(animToggle.relY), mouseX, mouseY);
+        selectorToggle.render(graphics, font, theme, yo(selectorToggle.relY), mouseX, mouseY);
 
         // ─── 黑名单卡片（仅 allow_tp_only / block_non_tp，56px高，可见3行） ───
         hoveredRow = -1;
@@ -215,7 +262,7 @@ public class OnlyTPScreen extends Screen {
             // so the highlight never runs under the bar.
             int rowRightX = guiLeft + (bl.size() > MAX_VISIBLE_ITEMS ? GUI_WIDTH - 20 : GUI_WIDTH - 14);
             for (int i = 0; i < visible; i++) {
-                int idx = blScroll + i;
+                int idx = blAnim.displayValue() + i;
                 if (idx >= bl.size()) break;
                 int y = yo(listStartY + i * LIST_ITEM_H) - 6;
                 boolean rowHover = canEdit && mouseX >= guiLeft + 12 && mouseX <= rowRightX
@@ -248,19 +295,24 @@ public class OnlyTPScreen extends Screen {
                 theme.drawScrollTrack(graphics, tx, tTop, 4, tBot - tTop);
                 int trackH = tBot - tTop;
                 int thumbH = Math.max(8, trackH * MAX_VISIBLE_ITEMS / bl.size());
-                float p = (float) blScroll / Math.max(1, bl.size() - MAX_VISIBLE_ITEMS);
+                float p = blAnim.value() / Math.max(1, bl.size() - MAX_VISIBLE_ITEMS);
                 theme.drawScrollThumb(graphics, tx, tTop + Math.round((trackH - thumbH) * p), 4, thumbH);
             }
         }
 
-        // ─── 底部状态（与黑名单卡片左对齐） ───
-        int bottomY = 198;
+        // ─── 底部状态（与黑名单卡片左对齐；高度与保存/取消按钮同一行） ───
+        int bottomY = 200;
         graphics.text(font,
                 Component.translatable(canEdit ? "gui.onlytp.can_edit" : "gui.onlytp.view_only"),
                 guiLeft + 8, yo(bottomY), canEdit ? theme.okColor() : theme.warnColor(), false);
 
-        // 无编辑权限（只读）时叠加遮罩，令自绘内容呈模糊观感；原版按钮在 super.render 中绘制于遮罩之上仍清晰
-        if (!canEdit) graphics.fill(0, 0, this.width, this.height, 0x50000000);
+        // 无编辑权限（只读）时叠加遮罩，令自绘内容呈模糊观感；原版按钮在 super 中绘制于遮罩之上仍清晰。
+        // 该遮罩必须整屏、不随开/关动画缩放：临时退出变换再铺，铺完恢复。
+        if (!canEdit) {
+            boolean suspended = anim.suspend(graphics);
+            graphics.fill(0, 0, this.width, this.height, 0x50000000);
+            if (suspended) anim.resume(graphics, width, height);
+        }
 
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
@@ -288,7 +340,9 @@ public class OnlyTPScreen extends Screen {
                 }
             }
             if (!showHand && (showPauseToggle.isClicked(mouseX, mouseY, font, yo(showPauseToggle.relY))
-                    || styleToggle.isClicked(mouseX, mouseY, font, yo(styleToggle.relY)))) {
+                    || styleToggle.isClicked(mouseX, mouseY, font, yo(styleToggle.relY))
+                    || animToggle.isClicked(mouseX, mouseY, font, yo(animToggle.relY))
+                    || selectorToggle.isClicked(mouseX, mouseY, font, yo(selectorToggle.relY)))) {
                 showHand = true;
             }
             if (!showHand && hoveredRow >= 0 && isBlacklistVisible()) {
@@ -312,14 +366,24 @@ public class OnlyTPScreen extends Screen {
         if (tip == null) {
             tip = styleToggle.truncatedTooltip(font, mouseX, mouseY, yo(styleToggle.relY));
         }
+        if (tip == null) {
+            tip = animToggle.truncatedTooltip(font, mouseX, mouseY, yo(animToggle.relY));
+        }
+        if (tip == null) {
+            tip = selectorToggle.truncatedTooltip(font, mouseX, mouseY, yo(selectorToggle.relY));
+        }
         if (tip != null) {
-            PanelHover.render(graphics, font, tip, mouseX, mouseY, this.width, this.height);
+            showTip(graphics, tip, mouseX, mouseY);
         }
 
         // Red row-action hint ("click to remove") in the gold hover box.
         if (rowRemoveHint != null) {
-            PanelHover.render(graphics, font, rowRemoveHint, mouseX, mouseY, this.width, this.height, 0xFFFF5555);
+            showTip(graphics, rowRemoveHint, mouseX, mouseY, 0xFFFF5555);
         }
+
+        // 动画帧收尾：撤销位姿变换 + 黑幕；关闭动画播完则立刻切屏（不依赖 tick）
+        anim.endFrame(graphics, width, height);
+        if (anim.isCloseFinished()) doClose();
     }
 
     // ═══════════ 交互 ═══════════
@@ -336,6 +400,7 @@ public class OnlyTPScreen extends Screen {
                         playClickSound();
                         selectedMode = MODES[i];
                         blScroll = 0;
+                        blAnim.snapTo(0); // 切换模式＝换一份名单，直接归零不滑
                         reloadWidgets();
                     }
                     return true;
@@ -355,6 +420,21 @@ public class OnlyTPScreen extends Screen {
                 reloadWidgets();
                 return true;
             }
+            // 界面动画开关：立刻重配动画器（不重播开屏动画，但本次关屏即时生效）
+            if (animToggle.isClicked(mouseX, mouseY, font, yo(animToggle.relY))) {
+                playClickSound();
+                localEnableAnimations = !localEnableAnimations;
+                animToggle.setChecked(localEnableAnimations);
+                applyAnimationConfig();
+                return true;
+            }
+            // 目标选择器开关：改完保存即生效（客户端提权感知 + 服务端拦截，两侧同一开关）
+            if (selectorToggle.isClicked(mouseX, mouseY, font, yo(selectorToggle.relY))) {
+                playClickSound();
+                localAllowSelectors = !localAllowSelectors;
+                selectorToggle.setChecked(localAllowSelectors);
+                return true;
+            }
             // 黑名单删除
             if (hoveredRow >= 0 && isBlacklistVisible()) {
                 List<String> bl = getCurrentBlacklist();
@@ -362,6 +442,7 @@ public class OnlyTPScreen extends Screen {
                     playClickSound();
                     bl.remove(hoveredRow);
                     blScroll = Mth.clamp(blScroll, 0, Math.max(0, bl.size() - MAX_VISIBLE_ITEMS));
+                    blAnim.setTarget(blScroll);
                     hoveredRow = -1;
                     return true;
                 }
@@ -384,6 +465,7 @@ public class OnlyTPScreen extends Screen {
                 int top = yo(listStartY) - 8, bot = yo(listStartY + MAX_VISIBLE_ITEMS * LIST_ITEM_H) - 8;
                 if (mouseY >= top && mouseY < bot) {
                     blScroll = Mth.clamp(blScroll - (int) Math.signum(scrollY), 0, bl.size() - MAX_VISIBLE_ITEMS);
+                    blAnim.setTarget(blScroll); // 滚轮只改目标，ScrollAnim 负责滑过去
                     return true;
                 }
             }
@@ -392,6 +474,28 @@ public class OnlyTPScreen extends Screen {
     }
 
     // ═══════════ 辅助方法 ═══════════
+
+    /**
+     * 悬停提示框。现代主题用自绘金框（{@link PanelHover}，与面板风格统一）；
+     * 「原版风格纹理」开启时改用原版 {@link GuiGraphicsExtractor#setTooltipForNextFrame}
+     * —— 原版提示框（九宫格贴图 + 原版配色）能被资源包与其它模组正常改写。
+     */
+    private void showTip(GuiGraphicsExtractor g, String text, int mouseX, int mouseY) {
+        if (localUseVanilla) {
+            g.setTooltipForNextFrame(font, Component.literal(text), mouseX, mouseY);
+            return;
+        }
+        PanelHover.render(g, font, text, mouseX, mouseY, this.width, this.height);
+    }
+
+    /** 同 {@link #showTip}，但自绘金框用调用方指定的文字颜色（ARGB，例如红字警告）。 */
+    private void showTip(GuiGraphicsExtractor g, String text, int mouseX, int mouseY, int textColor) {
+        if (localUseVanilla) {
+            g.setTooltipForNextFrame(font, Component.literal(text), mouseX, mouseY);
+            return;
+        }
+        PanelHover.render(g, font, text, mouseX, mouseY, this.width, this.height, textColor);
+    }
 
     private void reloadWidgets() {
         String typed = playerNameInput != null ? playerNameInput.getValue() : "";
@@ -418,6 +522,7 @@ public class OnlyTPScreen extends Screen {
         playerNameInput.setValue("");
         playClickSound();
         blScroll = Math.max(0, bl.size() - MAX_VISIBLE_ITEMS);
+        blAnim.setTarget(blScroll);
         // 添加后保持输入框聚焦，光标继续闪烁可连续输入
         setInitialFocus(playerNameInput);
         playerNameInput.setFocused(true);
@@ -447,11 +552,13 @@ public class OnlyTPScreen extends Screen {
         // Local edits (opened from the main-menu mod list) only persist to the local toml.
         if (!localEdit && AvalonLink.isAvalonLoaded()) {
             AvalonNetwork.sendToServer(NetworkChannels.UPDATE, new ConfigUpdatePacket(
-                    selectedMode, localShowPause, localUseVanilla ? 1 : 0,
+                    selectedMode, localAllowSelectors, localShowPause, localEnableAnimations, localUseVanilla ? 1 : 0,
                     blacklistAllowTp, blacklistBlockNonTp));
         }
         OnlyTPConfig.mode = selectedMode;
+        OnlyTPConfig.allowEntitySelectors = localAllowSelectors;
         OnlyTPConfig.showPauseButton = localShowPause;
+        OnlyTPConfig.enableAnimations = localEnableAnimations;
         OnlyTPConfig.guiButtonStyle = localUseVanilla ? 1 : 0;
         OnlyTPConfig.blacklistAllowTp = new ArrayList<>(blacklistAllowTp);
         OnlyTPConfig.blacklistBlockNonTp = new ArrayList<>(blacklistBlockNonTp);
@@ -461,13 +568,29 @@ public class OnlyTPScreen extends Screen {
         onClose();
     }
 
-    @Override
-    public void onClose() {
+    /** 真正切屏（有关闭动画时由动画播完后调用）。 */
+    private void doClose() {
+        if (closeDone) return;
+        closeDone = true;
         if (parentScreen != null && minecraft != null) {
             minecraft.setScreenAndShow(parentScreen);
         } else {
             super.onClose();
         }
+    }
+
+    @Override
+    public void onClose() {
+        // 有关闭动画 → 先播动画，播完再由 doClose() 真正切屏
+        if (anim.beginClose()) return;
+        doClose();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        blAnim.tick();
+        if (anim.isCloseFinished()) doClose();
     }
 
     @Override
