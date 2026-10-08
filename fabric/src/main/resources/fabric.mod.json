@@ -29,10 +29,10 @@
         "${mod_id}.fabric.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.14",
+        "fabricloader": ">=0.19.3",
         "fabric-api": "*",
-        "minecraft": ">=26.2",
-        "java": ">=21"
+        "minecraft": ">=26.1 <26.3",
+        "java": ">=25"
     },
     "suggests": {
         "avalonbase": ">=1.0.0"
