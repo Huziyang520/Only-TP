@@ -38,5 +38,4 @@ plugins {
 rootProject.name = 'OnlyTP'
 include("common")
 include("fabric")
-include("forge")
 include("neoforge")
