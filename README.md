@@ -1,113 +1,130 @@
-🔒 OnlyTP
+**English** | [中文](#中文)
 
-Minecraft 指令限制模组 | Minecraft Command Restriction Mod
+---
 
-⚠️ WARNING
-In versions 2026.8.16 and later, the visual editing interface requires the AvalonBase mod to be installed in order to display. Otherwise, modifications can only be made through the configuration file. If the configuration file items are incomplete, you can delete the configuration file and the game will automatically recreate it. ⚠️
+# Only TP
 
-⚠️ 警告
-在 2026.8.16 及以后的版本中，可视化编辑界面需要安装 AvalonBase 模组才能显示，否则只能通过配置文件进行修改。若配置文件项目不完全，可删除配置文件，游戏会自动创建。 ⚠️
+> A server-side command limiter for Minecraft: let players use teleport commands only, or block every non-teleport command.
 
-📖 Features
+## What it does
 
-OnlyTP provides three command restriction modes to help server administrators precisely control player command permissions:
+| Mode | Effect |
+|---|---|
+| **Allow TP only** | Regular players may use teleport commands. Other commands keep their vanilla behaviour. |
+| **Block non-TP** | Teleport commands are allowed for everyone; every other command is blocked. Operators can be given a whitelist of extra commands. |
+| **Enable both** | Both rules apply at the same time, each with its own exemption list. |
+| **Disable mod** | No restriction at all. |
 
-Mode 1: TP Only
+- Blocked commands answer with a red `Only TP: This command has been disabled!`.
+- Blocked game mode switching answers with its own red message.
+- Each mode has its **own exemption list**: players on it are never restricted.
 
-Non-OP players can only use /tp and /teleport commands. Other commands are intercepted and executed with elevated privileges. OP players are unrestricted.
+## Quick start
 
-Mode 2: Block Non-TP
+1. Put the mod file into your server's `mods` folder (Fabric or NeoForge).
+2. Start the server once — `config/onlytp.toml` is created automatically.
+3. Either edit that file, or use the in-game editor.
+4. Pick a mode, fill in the exemption list (and the operator command whitelist if you want one), save.
 
-OP players can only use TP commands. Using other commands will be blocked with a notification. Non-OP players are unrestricted. The F3+F4 game mode switcher is also blocked for OP players.
+## The in-game editor
 
-Mode 3: Both Enabled
+- Open it from the **pause menu** (the mod's edit button) or from the **mod list** → *Only TP* → *Config*.
+- The visual editor needs the optional library **AvalonBase** on the client, plus operator permission on the server. Without AvalonBase the mod still works — you just edit the config file by hand.
+  - AvalonBase: <https://www.curseforge.com/minecraft/mc-mods/avalonbase>
+- *Interface* options: **Show pause button**, **Vanilla-style textures** and **Enable interface animations** (all on by default).
 
-Both rules are applied simultaneously. Non-OP players can only use TP commands, and OP players can also only use TP commands.
+## Config file
 
-⚫ Blacklist System
+`config/onlytp.toml` — plain TOML, safe to edit by hand at any time; changes are picked up **without restarting the server**.
 
-Each mode has an independent blacklist. Blacklisted players are completely exempt from that mode's restrictions and can freely use all commands.
+| Key | Meaning |
+|---|---|
+| `mode` | `disabled` / `allow_tp_only` / `block_non_tp` / `both` |
+| `show_pause_button` | Show the edit button in the pause menu |
+| `enable_animations` | Interface open/close animations |
+| `gui_button_style` | `0` = modern look, `1` = vanilla-style buttons |
+| `[mode_allow_tp_only]` / `[mode_block_non_tp]` | Exemption lists of that mode |
+| `[command_whitelist]` | Extra commands operators may use in "block non-TP" mode |
 
-🎨 Dual-Style GUI Configuration
+## Good to know
 
-Modern Purple-Black Style: Dark background, purple borders, sharp-cornered design
+- Which commands count as "teleport commands" is decided by the mod, not by the config.
+- Command names are matched case-insensitively; a leading `/` is ignored.
+- Everything is decided on the **server**; installing the mod on the client only adds the visual editor.
 
-Vanilla Chest Style: Mimics the original Minecraft interface style
+## Links
 
-LAN hosts or server administrators can open the configuration panel via the "TP" button in the pause menu or through commands. All changes are instantly synced to all players.
+- Project page: <https://www.curseforge.com/minecraft/mc-mods/only-tp>
+- Feedback (backup): <https://issue.mengcai.online/>
 
-🚀 Usage
+## License
 
-Place the mod jar file into the mods folder
+MIT — author: Huziyang520
 
-Launch the game and enter a world or server
+---
+---
 
-Press ESC to open the pause menu, click the "TP" button to enter the configuration interface
+<a id="中文"></a>
 
-Select the desired mode, configure the blacklist, and click "Save" to apply
+[English](#only-tp) | **中文**
 
-⚙️ Configuration Options
+---
 
+# Only TP
 
-Option	Description
-Non-OP players TP only	Enable Mode 1
-OP players block non-TP	Enable Mode 2 (includes game mode switcher block)
-Both enabled	Enable Mode 3
-Disable mod function	Disable all restrictions
-Show pause button	Whether to show the "TP" button in the pause menu
-Vanilla style texture	Switch to vanilla chest-style interface
-👥 Blacklist Management
+> Minecraft 服务端的指令限制器：让玩家只能使用传送类指令，或禁止所有非传送指令。
 
-In the "Blacklist Management" section, enter a player name and click "+ Add" to add them to the blacklist. Blacklisted players are exempt from the current mode's restrictions. Click an entry to remove it.
+## 它做什么
 
-📖 功能介绍
+| 模式 | 效果 |
+|---|---|
+| **非OP玩家仅允许TP指令** | 普通玩家可以使用传送类指令；其它指令保持原版行为。 |
+| **OP玩家禁止非TP指令** | 所有人都能使用传送类指令；其它指令一律禁止。管理员可以额外配一份"命令白名单"。 |
+| **同时启用** | 两套规则同时生效，各自带独立的豁免名单。 |
+| **关闭模组功能** | 完全不做限制。 |
 
-OnlyTP 提供三种指令运行模式，帮助服务器管理员精确控制玩家的指令使用权限：
+- 被拦截的指令会收到红字 `Only TP: 该指令已被禁止！`。
+- 被拦截的游戏模式切换会显示对应的游戏模式切换提示。
+- 每个模式都有**自己的豁免名单**：名单里的玩家完全不受限制。
 
-模式一：仅允许 TP
+## 快速开始
 
-非 OP 玩家只能使用 /tp 和 /teleport 指令，其他指令会被自动拦截并提权执行。OP 玩家不受限制，可正常使用所有指令。
+1. 把模组文件放进服务端的 `mods` 文件夹（Fabric 或 NeoForge）。
+2. 启动一次服务端，会自动生成 `config/onlytp.toml`。
+3. 直接改这个文件，或者用游戏内编辑界面。
+4. 选好模式、填好豁免名单（需要的话再配管理员命令白名单），保存即可。
 
-模式二：禁止非 TP
+## 游戏内编辑界面
 
-OP 玩家只能使用 TP 类指令，使用其他指令会被拦截并提示。非 OP 玩家不受限制。同时禁止 OP 玩家使用 F3+F4 游戏模式切换器。
+- 从**暂停菜单**的编辑按钮进入，或从**模组列表** → *Only TP* → *配置* 进入。
+- 可视化编辑界面需要客户端安装可选前置库 **AvalonBase**，并且在服务端拥有管理员权限；不装 AvalonBase 也能正常使用，只是只能手改配置文件。
+  - AvalonBase 下载：<https://www.curseforge.com/minecraft/mc-mods/avalonbase>
+- 「界面设置」里有 **显示暂停按钮**、**原版风格纹理**、**启用动画效果** 三项（默认都开启）。
 
-模式三：同时启用
+## 配置文件
 
-前两种规则叠加生效。非 OP 玩家只能使用 TP 指令，OP 玩家也只能使用 TP 指令。
+`config/onlytp.toml` —— 纯 TOML 文本，随时可以手改，**改动无需重启服务端**即可生效。
 
-⚫ 黑名单系统
+| 键 | 含义 |
+|---|---|
+| `mode` | `disabled` / `allow_tp_only` / `block_non_tp` / `both` |
+| `show_pause_button` | 是否显示暂停菜单里的编辑按钮 |
+| `enable_animations` | 是否启用界面开/关动画 |
+| `gui_button_style` | `0` = 现代风格，`1` = 原版风格按钮 |
+| `[mode_allow_tp_only]` / `[mode_block_non_tp]` | 对应模式的豁免玩家名单 |
+| `[command_whitelist]` | "禁止非TP指令"模式下管理员可额外使用的指令 |
 
-每种模式均可独立配置黑名单。被加入黑名单的玩家完全不受该模式规则限制，可自由使用所有指令。
+## 使用须知
 
-🎨 双风格 GUI 配置界面
+- 哪些指令算"传送类指令"由模组内置决定，不需要在配置里写。
+- 指令名不区分大小写，开头的 `/` 会被忽略。
+- 所有判定都在**服务端**完成；客户端装本模组只是为了获得可视化编辑界面。
 
-简约紫黑直角风格：深色背景，紫色边框，直角设计
+## 相关链接
 
-原版箱子风格：仿原版 Minecraft 界面风格
+- 项目主页：<https://www.curseforge.com/minecraft/mc-mods/only-tp>
+- 备用反馈地址：<https://issue.mengcai.online/>
 
-局域网房主或服务器管理员可通过暂停菜单中的 "TP" 按钮或指令打开配置面板，所有修改即时同步至全体玩家。
+## 许可证
 
-🚀 使用方法
-
-将模组 jar 文件放入 mods 文件夹
-
-启动游戏，进入世界或服务器
-
-按 ESC 打开暂停菜单，点击 "TP" 按钮进入配置界面
-
-选择所需模式，配置黑名单，点击 "保存" 生效
-
-⚙️ 配置选项
-
-
-选项	说明
-非 OP 玩家仅允许 TP 指令	启用模式一
-OP 玩家禁止非 TP 指令	启用模式二（含禁止游戏模式切换器）
-同时启用	启用模式三
-关闭模组功能	禁用所有限制
-显示暂停按钮	是否在暂停菜单显示 "TP" 按钮
-原版风格纹理	切换为原版箱子风格界面
-👥 黑名单管理
-
-在 "黑名单管理" 区域输入玩家名称，点击 "+ 添加" 将其加入黑名单。黑名单玩家不受当前模式规则限制。点击条目可删除。
+MIT —— 作者：Huziyang520
