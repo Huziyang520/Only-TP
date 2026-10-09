@@ -1,6 +1,7 @@
 package com.onlytp.onlytpmod.gui.dialog;
 
 import com.avalon.base.gui.theme.GuiTheme;
+import com.avalon.base.gui.util.MouseButtons;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -9,6 +10,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import java.util.function.Consumer;
 
@@ -95,11 +97,13 @@ public final class LocalConfigNoticeDialog extends EnderDialog {
         boolean hover = overCheckbox(mouseX, mouseY);
         int labelColor = hover ? theme.titleColor() : theme.textColor();
         g.text(font, checkboxLabel, bx + LABEL_GAP, by + 1, labelColor, false);
+        // 勾选框是自绘控件，必须自己请求手形；只请求手形、不请求箭头，避免盖掉按钮/输入框的光标
+        if (hover) g.requestCursor(CursorTypes.POINTING_HAND);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0 && overCheckbox(event.x(), event.y())) {
+        if (MouseButtons.isLeft(event) && overCheckbox(event.x(), event.y())) {
             this.checked = !this.checked;
             Minecraft.getInstance().getSoundManager().play(
                     SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));

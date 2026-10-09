@@ -41,8 +41,8 @@ dependencies {
     // AvalonBase 前置支持库：运行时作为 mod 依赖
     // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
     // AvalonBase 升版时必须同步修改此处文件名。
-    implementation fileTree(project.file("../../../AvalonBase/26.2/neoforge/build/libs")) {
-        include "avalonbase-neoforge-26.2-1.4.4.jar"
+    implementation fileTree(project.file("../../../AvalonBase/26.1-26.2/neoforge/build/libs")) {
+        include "avalonbase-neoforge-26.2-1.5.1.jar"
         exclude "*-sources.jar"
         exclude "*-javadoc.jar"
     }

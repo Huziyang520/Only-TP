@@ -18,15 +18,19 @@ import java.util.List;
  */
 public class ConfigUpdatePacket {
     private final String mode;
+    private final boolean allowEntitySelectors;
     private final boolean showPauseButton;
+    private final boolean enableAnimations;
     private final int guiButtonStyle;
     private final List<String> blacklistAllowTp;
     private final List<String> blacklistBlockNonTp;
 
-    public ConfigUpdatePacket(String mode, boolean showPauseButton, int guiButtonStyle,
-                              List<String> blA, List<String> blB) {
+    public ConfigUpdatePacket(String mode, boolean allowEntitySelectors, boolean showPauseButton, boolean enableAnimations,
+                              int guiButtonStyle, List<String> blA, List<String> blB) {
         this.mode = mode;
+        this.allowEntitySelectors = allowEntitySelectors;
         this.showPauseButton = showPauseButton;
+        this.enableAnimations = enableAnimations;
         this.guiButtonStyle = guiButtonStyle;
         this.blacklistAllowTp = new ArrayList<>(blA);
         this.blacklistBlockNonTp = new ArrayList<>(blB);
@@ -34,7 +38,9 @@ public class ConfigUpdatePacket {
 
     public ConfigUpdatePacket(FriendlyByteBuf buf) {
         this.mode = buf.readUtf();
+        this.allowEntitySelectors = buf.readBoolean();
         this.showPauseButton = buf.readBoolean();
+        this.enableAnimations = buf.readBoolean();
         this.guiButtonStyle = buf.readVarInt();
         this.blacklistAllowTp = readList(buf);
         this.blacklistBlockNonTp = readList(buf);
@@ -42,7 +48,9 @@ public class ConfigUpdatePacket {
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(mode);
+        buf.writeBoolean(allowEntitySelectors);
         buf.writeBoolean(showPauseButton);
+        buf.writeBoolean(enableAnimations);
         buf.writeVarInt(guiButtonStyle);
         writeList(buf, blacklistAllowTp);
         writeList(buf, blacklistBlockNonTp);
@@ -56,7 +64,9 @@ public class ConfigUpdatePacket {
         if (!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return;
 
         OnlyTPConfig.mode = this.mode;
+        OnlyTPConfig.allowEntitySelectors = this.allowEntitySelectors;
         OnlyTPConfig.showPauseButton = this.showPauseButton;
+        OnlyTPConfig.enableAnimations = this.enableAnimations;
         OnlyTPConfig.guiButtonStyle = this.guiButtonStyle;
         OnlyTPConfig.blacklistAllowTp = new ArrayList<>(this.blacklistAllowTp);
         OnlyTPConfig.blacklistBlockNonTp = new ArrayList<>(this.blacklistBlockNonTp);
@@ -65,7 +75,8 @@ public class ConfigUpdatePacket {
         var server = player.level().getServer();
         if (server == null) return;
 
-        var sync = new ConfigSyncPacket(OnlyTPConfig.mode, OnlyTPConfig.showPauseButton, OnlyTPConfig.guiButtonStyle,
+        var sync = new ConfigSyncPacket(OnlyTPConfig.mode, OnlyTPConfig.allowEntitySelectors,
+                OnlyTPConfig.showPauseButton, OnlyTPConfig.enableAnimations, OnlyTPConfig.guiButtonStyle,
                 OnlyTPConfig.blacklistAllowTp, OnlyTPConfig.blacklistBlockNonTp);
         if (AvalonLink.isAvalonLoaded()) {
             sendSyncToAll(server, sync);

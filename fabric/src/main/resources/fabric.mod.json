@@ -3,7 +3,7 @@
     "id": "onlytp",
     "version": "${version}",
     "name": "${mod_name}",
-    "description": "${description}",
+    "description": "[EN] Restrict players to TP-related commands only, or block all non-TP commands.\n[CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。",
     "authors": [
         "${mod_author}"
     ],
@@ -40,6 +40,11 @@
     "custom": {
         "catalogue": {
             "configFactory": "com.onlytp.onlytpmod.client.CatalogueConfigEntry"
+        },
+        "modmenu": {
+            "links": {
+                "onlytp.feedback": "https://issue.mengcai.online/"
+            }
         }
     }
 }

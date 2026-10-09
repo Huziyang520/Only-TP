@@ -23,8 +23,8 @@ dependencies {
     // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
     // AvalonBase 升版时必须同步修改此处文件名。
     // 注：common 为 NeoForge moddev 模块，无 loom，只能用普通 compileOnly。
-    compileOnly fileTree(project.file("../../../AvalonBase/26.2/fabric/build/libs")) {
-        include "avalonbase-fabric-26.2-1.4.4.jar"
+    compileOnly fileTree(project.file("../../../AvalonBase/26.1-26.2/fabric/build/libs")) {
+        include "avalonbase-fabric-26.2-1.5.1.jar"
         exclude "*sources*", "*javadoc*"
     }
 }

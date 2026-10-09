@@ -5,14 +5,25 @@ license = "${license}"
 modId = "${mod_id}"
 version = "${version}"
 displayName = "${mod_name}"
-# displayURL / issueTrackerURL / logoFile are mod-specific and MUST live in
+# displayURL / issueTrackerURL / iconFile / logoFile are mod-specific and MUST live in
 # the [[mods]] table; placed at the top level NeoForge silently ignores them
 # and the mod-list homepage button stays disabled.
+# 26.2+ NeoForge splits the mod-list artwork into two slots (iconFile = square 1:1 icon
+# in the left list, bannerFile = wide banner on the right). 26.1.x and earlier only know
+# the deprecated logoFile. This branch spans 26.1~26.2, so both keys are declared:
+# 26.2+ picks iconFile, 26.1.x falls back to logoFile. We only ship a 1:1 icon.
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/only-tp"
 issueTrackerURL = "https://github.com/Huziyang520/Only-TP/issues"
+iconFile = "assets/onlytp/textures/onlytp.png"
 logoFile = "assets/onlytp/textures/onlytp.png"
 authors = "${mod_author}"
-description = '''${description}'''
+description = '''
+[EN] Restrict players to TP-related commands only, or block all non-TP commands.
+[CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。
+'''
+# 客户端选择器权限注入（仅客户端生效的 mixin，见 mixins.json 的 client 列表）
+[[mixins]]
+config = "onlytp.neoforge.mixins.json"
 [[dependencies.${mod_id}]]
 modId = "neoforge"
 type = "required"
