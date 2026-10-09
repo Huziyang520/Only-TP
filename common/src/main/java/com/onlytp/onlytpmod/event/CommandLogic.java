@@ -2,8 +2,8 @@ package com.onlytp.onlytpmod.event;
 
 import com.mojang.brigadier.ParseResults;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
+import com.onlytp.onlytpmod.util.ModMsg;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
@@ -89,17 +89,34 @@ public class CommandLogic {
 
     private static boolean handleAllowTpOnly(ServerPlayer player, String raw, String cmd, boolean isOp) {
         if (isOp) return false; // OP 不限制
-        // 非OP → 仅提权执行 TP 命令，其余命令保持原版行为（可用则用，不可用则显示“未知或不完整的命令”）
+        // 非OP → 仅提权执行 TP 命令，其余命令保持原版行为（可用则用，不可用则显示"未知或不完整的命令"）
         if (OnlyTPConfig.isTpCommand(cmd)) {
+            if (deniesEntitySelector(raw, player)) return true;
             executeElevated(player, raw);
             return true;
         }
         return false;
     }
 
+    /**
+     * 目标选择器开关关闭时，拒绝**含选择器**的提权指令。
+     *
+     * <p>只关客户端是不够的：服务端是"用全权限源提权执行"，选择器天然不受限。因此在提权之前
+     * 再拦一次，保证"关闭 = 真的不能用"。
+     *
+     * @return true 表示已拦截（并已提示玩家）
+     */
+    private static boolean deniesEntitySelector(String raw, ServerPlayer player) {
+        if (OnlyTPConfig.allowEntitySelectors) return false;
+        if (raw == null || raw.indexOf('@') < 0) return false;
+        player.displayClientMessage(ModMsg.red(player, "message.onlytp.selector_blocked"), false);
+        return true;
+    }
+
     private static boolean handleBlockNonTp(ServerPlayer player, String raw, String cmd, boolean isOp) {
         if (OnlyTPConfig.isTpCommand(cmd)) {
             if (isOp) return false; // OP直接放行TP
+            if (deniesEntitySelector(raw, player)) return true;
             executeElevated(player, raw);
             return true;
         }
@@ -109,10 +126,10 @@ public class CommandLogic {
         }
         // gamemode/g 命令被禁时，提示游戏模式切换被禁（而非通用的指令禁止提示）
         if ("gamemode".equals(cmd) || "g".equals(cmd)) {
-            player.displayClientMessage(Component.translatable("message.onlytp.blocked_gamemode"), false);
+            player.displayClientMessage(ModMsg.red(player, "message.onlytp.blocked_gamemode"), false);
             return true;
         }
-        player.displayClientMessage(Component.translatable("message.onlytp.blocked"), false);
+        player.displayClientMessage(ModMsg.red(player, "message.onlytp.blocked"), false);
         return true;
     }
 
