@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -38,6 +39,10 @@ public class GuiEventHandler {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 
+            // 热加载：本机是主机（单机 / 局域网房主）时按 config/onlytp.toml 刷新，
+            // 保证手改 show_pause_button 后无需重启即可反映到暂停页按钮；联机客户端走服务端 SYNC，不读本地文件
+            if (mc.hasSingleplayerServer()) OnlyTPConfig.reloadIfChanged();
+
             if (!OnlyTPConfig.showPauseButton) return;
 
             int screenWidth = screen.width;
@@ -50,11 +55,11 @@ public class GuiEventHandler {
                     (btn) -> Component.empty()
             ) {
                 @Override
-                public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+                protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
                     super.renderWidget(graphics, mouseX, mouseY, partialTick);
                     int ox = getX() + (getWidth() - 16) / 2;
                     int oy = getY() + (getHeight() - 16) / 2;
-                    graphics.blit(BUTTON_TEXTURE, ox, oy, 0, 0, 16, 16, 16, 16);
+                    graphics.blit(RenderType::guiTextured, BUTTON_TEXTURE, ox, oy, 0.0F, 0.0F, 16, 16, 16, 16);
                 }
             });
         });

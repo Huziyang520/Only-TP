@@ -63,6 +63,11 @@ repositories {
         name = 'FabricMC'
         url = 'https://maven.fabricmc.net/'
     }
+    maven {
+        // Mod Menu（Fabric 模组列表配置入口，编译期）
+        name = 'TerraformersMC'
+        url = 'https://maven.terraformersmc.com/releases/'
+    }
 }
 
 // 本地多端构建无需显式 capability 声明（原模板用于 Maven 发布场景的坐标匹配）。
@@ -110,8 +115,6 @@ processResources {
             'mod_id'                       : mod_id,
             'license'                      : license,
             'description'                  : project.description,
-            "forge_version": forge_version,
-            "forge_loader_version_range": forge_loader_version_range,
             "neoforge_version": neoforge_version,
             "neoforge_loader_version_range": neoforge_loader_version_range,
             'credits'                      : credits,
