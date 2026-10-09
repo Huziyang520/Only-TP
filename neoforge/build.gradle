@@ -4,7 +4,7 @@ plugins {
 }
 
 base {
-    archivesName = "${mod_name}-neoforge-${minecraft_version}"
+    archivesName = "${mod_id}-neoforge-${mc_range_label}"
 }
 
 neoForge {
@@ -12,11 +12,6 @@ neoForge {
 
     // Automated decoration of Dependencies for Dev/Prod builds, and ModMaven publishing
     addModdingDependenciesTo(sourceSets.main)
-
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
 
     runs {
         client {
@@ -32,8 +27,8 @@ neoForge {
 dependencies {
     // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 neoforge.mods.toml 声明前置
     // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 toml 保证）
-    implementation fileTree(project.file("../../../AvalonBase/1.21.1/neoforge/build/libs")) {
-        include "avalonbase-neoforge-1.21.1-*.jar", "AvalonBase-neoforge-1.21.1-*.jar"
+    implementation fileTree(project.file("../../../AvalonBase/1.21-1.21.1/neoforge/build/libs")) {
+        include "AvalonBase-neoforge-1.21.1-1.5.1.jar"
         exclude "*-sources.jar"
         exclude "*-javadoc.jar"
     }

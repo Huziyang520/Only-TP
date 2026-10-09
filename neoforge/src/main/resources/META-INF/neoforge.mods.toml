@@ -1,14 +1,21 @@
 modLoader = "javafml"
 loaderVersion = "${neoforge_loader_version_range}"
 license = "${license}"
-issueTrackerURL = "https://github.com/Huziyang520/Only-TP/issues"
 [[mods]]
 modId = "${mod_id}"
 version = "${version}"
 displayName = "${mod_name}"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/only-tp"
+issueTrackerURL = "https://github.com/Huziyang520/Only-TP/issues"
 logoFile = "assets/onlytp/textures/onlytp.png"
 authors = "${mod_author}"
-description = '''${description}'''
+description = '''
+[EN] Restrict players to TP-related commands only, or block all non-TP commands.
+[CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。
+'''
+# 客户端选择器权限注入（仅客户端生效的 mixin，见 mixins.json 的 client 列表）
+[[mixins]]
+config = "onlytp.neoforge.mixins.json"
 [[dependencies.${mod_id}]]
 modId = "neoforge"
 type = "required"
