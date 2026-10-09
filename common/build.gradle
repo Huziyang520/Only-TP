@@ -24,10 +24,12 @@ dependencies {
     compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
 
     // AvalonBase 前置支持库（GUI 主题 / 平台抽象 / 网络框架）：编译期引用其 fabric dev jar（named 映射）
-    // 用 fileTree 通配匹配任意版本，避免 AvalonBase 升级版本时需同步修改本文件（依赖约束由运行期前置声明保证 >=1.0）
+    // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
+    // AvalonBase 升版时必须同步修改此处文件名。
     // 注：common 为 NeoForge moddev 模块，无 loom，只能用普通 compileOnly。
-    compileOnly fileTree(project.file("../../../AvalonBase/1.21.11/fabric/build/devlibs")) {
-        include "avalonbase-fabric-1.21.11-*-dev.jar"
+    // named 映射：loom 的 build/libs 是 intermediary 产物，common 为 moddev（official/parchment）编译，只能用 devlibs 的 dev jar。
+    compileOnly fileTree(project.file("../../../AvalonBase/1.21.9-1.21.11/fabric/build/devlibs")) {
+        include "avalonbase-fabric-1.21.11-1.5.1-dev.jar"
     }
 }
 

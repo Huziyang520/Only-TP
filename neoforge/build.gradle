@@ -31,11 +31,10 @@ neoForge {
 
 dependencies {
     // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 neoforge.mods.toml 声明前置
-    // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 toml 保证）
-    implementation fileTree(project.file("../../../AvalonBase/1.21.11/neoforge/build/libs")) {
-        include "avalonbase-neoforge-1.21.11-*.jar", "AvalonBase-neoforge-1.21.11-*.jar"
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
+    // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
+    // AvalonBase 升版时必须同步修改此处文件名。
+    implementation fileTree(project.file("../../../AvalonBase/1.21.9-1.21.11/neoforge/build/libs")) {
+        include "AvalonBase-neoforge-1.21.11-1.5.1.jar"
     }
     // nightconfig（TOML）：NeoForge 运行时自带，编译期显式声明以解析 common 的引用
     compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'

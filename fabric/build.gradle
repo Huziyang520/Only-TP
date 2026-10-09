@@ -11,13 +11,17 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 fabric.mod.json 声明前置
-    // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 fabric.mod.json 保证）
-    modImplementation fileTree(project.file("../../../AvalonBase/1.21.11/fabric/build/libs")) {
-        include "avalonbase-fabric-1.21.11-*.jar"
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
+    // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
+    // AvalonBase 升版时必须同步修改此处文件名。
+    modImplementation fileTree(project.file("../../../AvalonBase/1.21.9-1.21.11/fabric/build/libs")) {
+        include "avalonbase-fabric-1.21.11-1.5.1.jar"
     }
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+
+    // Mod Menu API: compile-time only so the mod list can show our config button.
+    // 本档 loom 为经典模式（mod* 配置可用）：modCompileOnly 会把它 remap 成 named，
+    // 且永远不会打进产物 jar。
+    modCompileOnly "com.terraformersmc:modmenu:17.0.1"
 
     // nightconfig（TOML）：Fabric 不自带，需显式引入并打包进 jar
     include implementation("com.electronwill.night-config:core:3.6.4")

@@ -63,6 +63,11 @@ repositories {
         name = 'FabricMC'
         url = 'https://maven.fabricmc.net/'
     }
+    maven {
+        // Mod Menu（Fabric 模组列表配置入口，编译期）
+        name = 'TerraformersMC'
+        url = 'https://maven.terraformersmc.com/releases/'
+    }
 }
 
 // 本地多端构建无需显式 capability 声明（原模板用于 Maven 发布场景的坐标匹配）。
