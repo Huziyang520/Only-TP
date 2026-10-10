@@ -207,6 +207,13 @@ public class OnlyTPScreen extends Screen {
 
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // 防闪（SKILL.md §10.28）：退场动画播完的那一帧，本屏不再绘制自己的背景，
+        // 并在背景阶段就交回父界面——否则本屏背景与父界面背景会叠在同一帧，看到一次跳变。
+        anim.tick();
+        if (anim.isClosing() && anim.isCloseFinished()) {
+            doClose(); // 与本次 return 成对：不可只留一半
+            return;
+        }
         // 背景通道交给原版：主菜单 = 全景图 + 模糊 + 菜单背景贴图；世界内 = 模糊 + 半透明暗底。
         // 旧实现整屏铺 0xC0101010 近不透明深色，在主菜单打开本屏时会把菜单背景整个盖住（"背景不透明"）。
         super.renderBackground(graphics, mouseX, mouseY, partialTick);
@@ -383,7 +390,7 @@ public class OnlyTPScreen extends Screen {
 
         // 动画帧收尾：撤销位姿变换 + 黑幕；关闭动画播完则立刻切屏（不依赖 tick）
         anim.endFrame(graphics, width, height);
-        if (anim.isCloseFinished()) doClose();
+        // 防闪（SKILL.md §10.28）：切父界面的动作已挪到背景方法的提前 return 分支，这里不再切屏
     }
 
     // ═══════════ 交互 ═══════════
@@ -590,6 +597,7 @@ public class OnlyTPScreen extends Screen {
     public void tick() {
         super.tick();
         blAnim.tick();
+        anim.tick();
         if (anim.isCloseFinished()) doClose();
     }
 
