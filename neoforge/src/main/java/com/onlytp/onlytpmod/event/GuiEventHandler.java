@@ -24,7 +24,7 @@ import net.neoforged.neoforge.common.NeoForge;
 public class GuiEventHandler {
 
     private static final ResourceLocation BUTTON_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/button.png");
+            new ResourceLocation(Constants.MOD_ID, "textures/gui/button.png");
 
     /** 由主入口在构造期调用，将本类的事件处理注册到 NeoForge 事件总线。 */
     public static void register() {

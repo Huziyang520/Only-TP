@@ -10,10 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 public final class NetworkChannels {
 
     /** 客户端 → 服务端：配置更新。 */
-    public static final ResourceLocation UPDATE = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "update");
+    public static final ResourceLocation UPDATE = new ResourceLocation(Constants.MOD_ID, "update");
 
     /** 服务端 → 客户端：配置同步。 */
-    public static final ResourceLocation SYNC = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "sync");
+    public static final ResourceLocation SYNC = new ResourceLocation(Constants.MOD_ID, "sync");
 
     private NetworkChannels() {
     }
