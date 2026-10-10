@@ -26,7 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 public class GuiEventHandler {
 
     private static final ResourceLocation BUTTON_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/button.png");
+                            new ResourceLocation(Constants.MOD_ID, "textures/gui/button.png");
 
     public static void register() {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {

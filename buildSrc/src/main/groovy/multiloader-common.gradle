@@ -10,11 +10,11 @@ base {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(java_version)
     withSourcesJar()
-    withJavadocJar()
+    // javadocJar disabled: Gradle 8.11 + Java 21 javadoc tool crashes with MalformedInputException
 }
 
 // Javadoc 使用 UTF-8 编码，避免中文注释在 Windows（GBK）平台下解析失败
-tasks.withType(Javadoc).configureEach {
+tasks.withType(Javadoc).configureEach { enabled = false
     options.encoding = 'UTF-8'
     options.addStringOption('Xdoclint:none', '-quiet')
 }
@@ -110,8 +110,8 @@ processResources {
             'mod_id'                       : mod_id,
             'license'                      : license,
             'description'                  : project.description,
-            "forge_version": forge_version,
-            "forge_loader_version_range": forge_loader_version_range,
+// forge_version intentionally omitted
+// forge_loader_version_range intentionally omitted
             "neoforge_version": neoforge_version,
             "neoforge_loader_version_range": neoforge_loader_version_range,
             'credits'                      : credits,
