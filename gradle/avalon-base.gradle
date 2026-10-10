@@ -1,0 +1,68 @@
+// AvalonBase 前置支持库定位（共享给 common / fabric / neoforge 三个子项目）。
+//
+// 用法：
+//   apply from: "${rootDir}/gradle/avalon-base.gradle"
+//   Fabric (loom)：modImplementation(files(resolveAvalonJar('fabric')))
+//   NeoForge     ：implementation(files(resolveAvalonJar('neoforge')))
+//
+// 两种 jar 都可作为编译期依赖：
+//   - 发布 jar（intermediary/SRG 映射，即 CurseForge/Modrinth 上下载的正式产物）→ 由 loom 重映射为 named
+//   - dev jar（named 映射，AvalonBase 项目 <loader>/build/devlibs/ 下的 *-dev.jar）→ 已是 named
+//
+// 之所以抽成共享脚本：multiloader-platform 会把 common 的源码目录加进各平台项目的
+// source set，同一批源码会被编译多次，因此每个平台项目都必须各自声明这份依赖。
+//
+// 之所以不用 fileTree 直接指路：fileTree 对不存在的目录返回空集且不报错，
+// 依赖会静默消失，最终以「找不到 com.avalon.* 包」的形式暴露，排查成本很高。
+ext.resolveAvalonJar = { String loader ->
+    String mc = project.property('mc_range_label')
+
+    // 优先级 1：显式指定文件（-Pavalon_fabric_jar=... / -Pavalon_neoforge_jar=... / 通用 -Pavalon_jar=...）
+    def explicit = project.findProperty("avalon_${loader}_jar") ?: project.findProperty('avalon_jar')
+    if (explicit != null) {
+        File f = project.file(explicit)
+        if (!f.isFile()) throw new GradleException("指定的 AvalonBase jar 不存在: ${f}")
+        project.logger.lifecycle("[OnlyTP] AvalonBase jar (${loader}): ${f}")
+        return f
+    }
+
+    // 优先级 2：按目录搜索。基准一律用 rootDir，不用各子项目目录，
+    // 这样整个项目被挪动或多套一层目录时路径依然成立。
+    def searchDirs = [
+            project.findProperty('avalon_dev_dir'),
+            "${rootDir}/libs",
+            "${rootDir}/../AvalonBase/${mc}/${loader}/build/devlibs",
+            "${rootDir}/../AvalonBase/${mc}/${loader}/build/libs",
+            "${rootDir}/../../AvalonBase/${mc}/${loader}/build/devlibs",
+            "${rootDir}/../../AvalonBase/${mc}/${loader}/build/libs",
+    ].findAll { it != null }.collect { project.file(it) }
+
+    def candidates = searchDirs.findAll { it.isDirectory() }
+            .collectMany { dir ->
+                project.fileTree(dir) {
+                    // AvalonBase 各 loader 产物命名大小写不统一：fabric 用 mod_id（avalonbase-*），
+                    // neoforge 历史产物用 mod_name（AvalonBase-*）。这里同时兼容两种。
+                    include "avalonbase-${loader}-${mc}-*.jar", "AvalonBase-${loader}-${mc}-*.jar"
+                    exclude "*-sources.jar", "*-javadoc.jar"
+                }.files
+            }
+            .toSorted { a, b -> a.name <=> b.name }
+
+    if (candidates.isEmpty()) {
+        throw new GradleException("""找不到 AvalonBase jar (avalonbase-${loader}-${mc}-*.jar)。
+已搜索以下目录：
+${searchDirs.collect { "  - $it" }.join('\n')}
+解决方式（任选一种）：
+  1) 把 jar 复制到 ${rootDir}/libs/
+  2) 在 AvalonBase 项目执行 gradlew build（产物在 ${loader}/build/devlibs/）
+  3) 显式指定：gradlew build -Pavalon_${loader}_jar=D:/path/to/avalonbase-${loader}-${mc}-x.y.z.jar""")
+    }
+
+    // 只能取一个：同目录可能残留历史版本的 dev jar，多个同名 mod jar 会让旧 API 抢先解析。
+    // 同时存在 dev 与发布 jar 时优先 dev，省一次 remap。
+    // 注：排序是字典序，1.10.0 会排在 1.2.0 之前；版本号进到两位数时需改为按段比较。
+    def devJars = candidates.findAll { it.name.endsWith('-dev.jar') }
+    File chosen = devJars.isEmpty() ? candidates.last() : devJars.last()
+    project.logger.lifecycle("[OnlyTP] AvalonBase jar (${loader}): ${chosen}")
+    return chosen
+}

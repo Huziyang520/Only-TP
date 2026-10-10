@@ -2,6 +2,9 @@ plugins {
     id 'multiloader-loader'
     id 'fabric-loom'
 }
+
+apply from: "${rootDir}/gradle/avalon-base.gradle"
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
@@ -10,14 +13,14 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 fabric.mod.json 声明前置
-    // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 fabric.mod.json 保证）
-    modImplementation fileTree(project.file("../../../AvalonBase/1.20.5-1.20.6/fabric/build/devlibs")) {
-        include "avalonbase-fabric-1.20.5-1.20.6-*-dev.jar"
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
-    }
+    // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 fabric.mod.json 声明前置。
+    // jar 定位逻辑见 gradle/avalon-base.gradle（同目录残留历史版本时只会取最新那个）。
+    modImplementation(files(resolveAvalonJar('fabric')))
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+
+    // ModMenu 仅编译期需要：modCompileOnly 会被 remap 成 named，且永不打进产物 jar。
+    // 版本沿用 1.21-1.21.8 档已缓存的那份（ModMenuApi 长期稳定，编译期只需要 API 形状）。
+    modCompileOnly "com.terraformersmc:modmenu:15.0.2"
 
     // nightconfig（TOML）：Fabric 不自带，需显式引入并打包进 jar
     include implementation("com.electronwill.night-config:core:3.6.4")
