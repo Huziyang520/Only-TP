@@ -13,6 +13,17 @@ java {
     // javadocJar disabled: Gradle 8.11 + Java 21 javadoc tool crashes with MalformedInputException
 }
 
+// 本区间的 NeoForm/vanilla 产物是 Java 21 字节码（major 65），javac 17 读不了它，
+// 会报“该文件内含版本 65.0, 应为 61.0”并导致整片符号解析失败。
+// 因此用 JDK 21 编译（java_version=21），再用 --release 17 把产物字节码锁回 major 61，
+// 与游戏运行时（1.20.2-1.20.4 仍为 Java 17）保持一致。
+tasks.withType(JavaCompile).configureEach {
+    def javaTarget = findProperty('java_target_version')
+    if (javaTarget != null) {
+        options.release = javaTarget.toString().toInteger()
+    }
+}
+
 // Javadoc 使用 UTF-8 编码，避免中文注释在 Windows（GBK）平台下解析失败
 tasks.withType(Javadoc).configureEach { enabled = false
     options.encoding = 'UTF-8'
@@ -62,6 +73,11 @@ repositories {
         // Fabric 相关依赖（fabric-loader、fabric-api）
         name = 'FabricMC'
         url = 'https://maven.fabricmc.net/'
+    }
+    maven {
+        // Mod Menu（Fabric 模组列表配置入口，编译期）
+        name = 'TerraformersMC'
+        url = 'https://maven.terraformersmc.com/releases/'
     }
 }
 

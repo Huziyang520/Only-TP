@@ -3,16 +3,14 @@ plugins {
     id 'net.neoforged.moddev'
 }
 
+apply from: "${rootDir}/gradle/avalon-base.gradle"
+
 neoForge {
     neoFormVersion = neo_form_version
     // Automatically enable AccessTransformers if the file exists
     def at = file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
-    }
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
     }
 }
 
@@ -23,12 +21,10 @@ dependencies {
     compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'
     compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
 
-    // AvalonBase 前置支持库（GUI 主题 / 平台抽象 / 网络框架）：编译期引用其 fabric dev jar（named 映射）
-    // 用 fileTree 通配匹配任意版本，避免 AvalonBase 升级版本时需同步修改本文件（依赖约束由运行期前置声明保证 >=1.0）
+    // AvalonBase 前置支持库（GUI 主题 / 平台抽象 / 网络框架）：编译期引用其 fabric dev jar（named 映射）。
+    // jar 定位逻辑见 gradle/avalon-base.gradle（同目录残留历史版本时只会取最新那个）。
     // 注：common 为 NeoForge moddev 模块，无 loom，只能用普通 compileOnly。
-    compileOnly fileTree(project.file("../../../AvalonBase/1.20.2-1.20.4/fabric/build/devlibs")) {
-        include "avalonbase-fabric-1.20.2-1.20.4-*-dev.jar"
-    }
+    compileOnly(files(resolveAvalonJar('fabric')))
 }
 
 configurations {
