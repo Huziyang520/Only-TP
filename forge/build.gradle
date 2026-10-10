@@ -40,8 +40,8 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 mods.toml 声明前置
     // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 mods.toml 保证）
-    implementation fileTree(project.file("../../../AvalonBase/1.20.1/forge/build/libs")) {
-        include "avalonbase-forge-1.20.1-*.jar"
+    implementation fileTree(project.file("../../../AvalonBase/1.20-1.20.1/forge/build/libs")) {
+        include "avalonbase-forge-1.20-1.20.1-*.jar"
         exclude "*-sources.jar"
         exclude "*-javadoc.jar"
     }

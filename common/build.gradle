@@ -17,8 +17,8 @@ dependencies {
 
     // AvalonBase 前置支持库（GUI 主题 / 平台抽象）：编译期引用其 fabric dev jar（named 映射）
     // 用 fileTree 通配匹配任意版本，避免 AvalonBase 升级版本时需同步修改本文件（依赖约束由运行期前置声明保证 >=1.0）
-    modCompileOnly fileTree(project.file("../../../AvalonBase/1.20.1/fabric/build/devlibs")) {
-        include "avalonbase-fabric-1.20.1-*-dev.jar"
+    modCompileOnly fileTree(project.file("../../../AvalonBase/1.20-1.20.1/fabric/build/devlibs")) {
+        include "avalonbase-fabric-1.20-1.20.1-*-dev.jar"
     }
 }
 
