@@ -2,6 +2,9 @@ plugins {
     id 'multiloader-loader'
     id 'fabric-loom'
 }
+
+apply from: "${rootDir}/gradle/avalon-base.gradle"
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
@@ -10,13 +13,20 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 fabric.mod.json 声明前置
-    // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 fabric.mod.json 保证）
-    modImplementation fileTree(project.file("../../../AvalonBase/1.20-1.20.1/fabric/build/devlibs")) {
-        include "avalonbase-fabric-1.20-1.20.1-*-dev.jar"
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
-    }
+    // AvalonBase 前置支持库：本项目的 source set 包含 common 的源码目录（由 multiloader-loader 注入），
+    // 因此这里也必须提供 com.avalon.* 才能编译 gui / NetworkRegistration。
+    // 用 modCompileOnly 而非 modImplementation：AvalonBase 是可选前置，不应进入本模组的运行时依赖元数据；
+    // 未安装时由 AvalonLink.isAvalonLoaded() 兜底。modLocalRuntime 让 dev 环境仍能加载它，且不影响发布产物。
+    // jar 定位逻辑见 gradle/avalon-base.gradle（同目录残留历史版本时只会取最新那个）。
+    def avalonJar = files(resolveAvalonJar('fabric'))
+    modCompileOnly(avalonJar)
+    modLocalRuntime(avalonJar)
+
+    // Mod Menu 仅编译期需要：modCompileOnly 会被 remap 成 named，且永不打进产物 jar。
+    // 必须用 1.20.x 档的 7.2.2 —— 高版本档（15.0.2 等）是 Java 21 字节码（major 65），
+    // 本分支用 JDK 17 编译（major 61），javac 会报“类文件具有错误的版本 65.0”。
+    modCompileOnly "com.terraformersmc:modmenu:7.2.2"
+
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
     // nightconfig（TOML）：Fabric 不自带，需显式引入并打包进 jar

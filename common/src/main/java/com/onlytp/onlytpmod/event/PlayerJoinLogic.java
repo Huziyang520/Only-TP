@@ -4,8 +4,9 @@ import com.onlytp.onlytpmod.AvalonLink;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.network.ConfigSyncPacket;
 import com.onlytp.onlytpmod.network.NetworkChannels;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * 玩家登录时同步配置。
@@ -23,13 +24,36 @@ public class PlayerJoinLogic {
         if (!AvalonLink.isAvalonLoaded()) return;
         try {
             Object sync = new ConfigSyncPacket(
-                    OnlyTPConfig.mode, OnlyTPConfig.showPauseButton, OnlyTPConfig.guiButtonStyle,
+                    OnlyTPConfig.mode, OnlyTPConfig.allowEntitySelectors, OnlyTPConfig.showPauseButton, OnlyTPConfig.enableAnimations,
+                    OnlyTPConfig.guiButtonStyle,
                     OnlyTPConfig.blacklistAllowTp, OnlyTPConfig.blacklistBlockNonTp);
             Class<?> clazz = Class.forName("com.avalon.base.network.AvalonNetwork");
             clazz.getMethod("sendToPlayer", ServerPlayer.class, ResourceLocation.class, Object.class)
                     .invoke(null, player, NetworkChannels.SYNC, sync);
         } catch (Exception e) {
             com.onlytp.onlytpmod.Constants.LOG.error("[OnlyTP] Failed to sync config to player via reflection", e);
+        }
+    }
+
+    /**
+     * 向服务器上所有在线玩家重播当前配置。
+     *
+     * <p>用于手改 {@code config/onlytp.toml} 触发热加载之后：{@code show_pause_button} 等
+     * 非命令类开关只改服务端内存不会影响已在线客户端，必须重播 SYNC 包（客户端据此重算暂停按钮可见性）。
+     */
+    public static void syncToAll(MinecraftServer server) {
+        if (server == null) return;
+        if (!AvalonLink.isAvalonLoaded()) return;
+        try {
+            Object sync = new ConfigSyncPacket(
+                    OnlyTPConfig.mode, OnlyTPConfig.allowEntitySelectors, OnlyTPConfig.showPauseButton, OnlyTPConfig.enableAnimations,
+                    OnlyTPConfig.guiButtonStyle,
+                    OnlyTPConfig.blacklistAllowTp, OnlyTPConfig.blacklistBlockNonTp);
+            Class<?> clazz = Class.forName("com.avalon.base.network.AvalonNetwork");
+            clazz.getMethod("sendToAll", MinecraftServer.class, ResourceLocation.class, Object.class)
+                    .invoke(null, server, NetworkChannels.SYNC, sync);
+        } catch (Exception e) {
+            com.onlytp.onlytpmod.Constants.LOG.error("[OnlyTP] Failed to broadcast config via reflection", e);
         }
     }
 }

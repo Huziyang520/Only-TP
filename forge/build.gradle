@@ -2,6 +2,16 @@ plugins {
     id 'multiloader-loader'
     id 'net.minecraftforge.gradle'
     id 'org.parchmentmc.librarian.forgegradle'
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+apply from: "${rootDir}/gradle/avalon-base.gradle"
+
+mixin {
+    // 为 main 源码集生成 refmap（parchment 命名 → SRG），并向 Jar Manifest 注入 MixinConfigs 键
+    // （Forge 1.20.1 / FG6：mixin 配置靠 manifest 而不是 mods.toml）
+    add sourceSets.main, 'onlytp.refmap.json'
+    config 'onlytp.forge.mixins.json'
 }
 
 minecraft {
@@ -38,20 +48,28 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 mods.toml 声明前置
-    // 通配匹配任意版本，避免 AvalonBase 升级时需同步修改（依赖约束 >=1.0 由 mods.toml 保证）
-    implementation fileTree(project.file("../../../AvalonBase/1.20-1.20.1/forge/build/libs")) {
-        include "avalonbase-forge-1.20-1.20.1-*.jar"
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
-    }
+
+    // AvalonBase 前置支持库：本项目的 source set 包含 common 的源码目录（由 multiloader-loader
+    // 注入），因此这里也必须提供 com.avalon.* 才能编译 gui / NetworkRegistration。
+    // 必须经 fg.deobf 处理：AvalonBase 的 forge 产物是 SRG 映射（无 devlibs），
+    // 直接 implementation 会让其中引用的 MC 类型对不上当前 named 映射，仍然编译失败。
+    // 用 compileOnly 而非 implementation：AvalonBase 是可选前置，不应进入运行时依赖；
+    // 未安装时由 AvalonLink.isAvalonLoaded() 兜底。jar 定位逻辑见 gradle/avalon-base.gradle。
+    compileOnly fg.deobf(files(resolveAvalonJar('forge')))
+
     // nightconfig（TOML）：Forge 运行时自带，编译期显式声明以解析 common 的引用
     compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'
     compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
+    compileOnly project(":common")
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
 }
 
 // ForgeGradle 6 自动处理 reobf
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     sourceCompatibility = targetCompatibility = '17'
+}
+
+jar {
+    finalizedBy('reobfJar')
 }

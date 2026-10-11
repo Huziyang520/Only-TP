@@ -1,7 +1,7 @@
 package com.onlytp.onlytpmod.event;
 
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
-import net.minecraft.network.chat.Component;
+import com.onlytp.onlytpmod.util.ModMsg;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
@@ -32,16 +32,7 @@ public class GameModeLogic {
         if (OnlyTPConfig.isWhitelistedForOp("gamemode")) return false;
 
         // 提示并回滚
-        player.displayClientMessage(Component.translatable("message.onlytp.blocked_gamemode"), true);
+        player.displayClientMessage(ModMsg.red(player, "message.onlytp.blocked_gamemode"), true);
         return true;
-    }
-
-    /**
-     * Forge 侧入口：切换游戏模式事件触发。若应拦截则回滚到旧模式。
-     */
-    public static void onChangeGameMode(ServerPlayer player, GameType oldGameMode) {
-        if (shouldBlock(player, oldGameMode)) {
-            player.setGameMode(oldGameMode);
-        }
     }
 }

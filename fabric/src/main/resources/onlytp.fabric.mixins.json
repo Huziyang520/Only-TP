@@ -9,7 +9,8 @@
         "ServerPlayerMixin"
     ],
     "client": [
-        "ScreenAccessor"
+        "ScreenAccessor",
+        "ClientSuggestionProviderMixin"
     ],
     "server": [
     ],

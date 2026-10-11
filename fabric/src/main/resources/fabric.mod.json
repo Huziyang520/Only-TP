@@ -20,6 +20,9 @@
         ],
         "client": [
             "com.onlytp.onlytpmod.client.OnlyTPClient"
+        ],
+        "modmenu": [
+            "com.onlytp.onlytpmod.client.ModMenuConfigEntry"
         ]
     },
     "mixins": [
@@ -33,5 +36,15 @@
     },
     "suggests": {
         "avalonbase": ">=1.0.0"
+    },
+    "custom": {
+        "catalogue": {
+            "configFactory": "com.onlytp.onlytpmod.client.CatalogueConfigEntry"
+        },
+        "modmenu": {
+            "links": {
+                "onlytp.feedback": "https://issue.mengcai.online/"
+            }
+        }
     }
 }
