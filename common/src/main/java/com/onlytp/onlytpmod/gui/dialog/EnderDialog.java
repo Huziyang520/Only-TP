@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import net.minecraft.client.gui.components.Renderable;
 
 /**
  * Base for OnlyTP's standalone modal dialogs.
@@ -129,6 +130,7 @@ abstract class EnderDialog extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float delta) {
+        renderBackground(g, mouseX, mouseY, delta);
         // 描边/命中都用动画坐标系（整块面板会被缩放，坐标必须跟着换）
         mouseX = (int) anim.localX(mouseX, width);
         mouseY = (int) anim.localY(mouseY, height);
@@ -141,7 +143,11 @@ abstract class EnderDialog extends Screen {
             y += LINE_H;
         }
         renderDialogContents(g, mouseX, mouseY);
-        super.render(g, mouseX, mouseY, delta);
+        for (var child : children()) {
+            if (child instanceof Renderable childRenderable) {
+                childRenderable.render(g, mouseX, mouseY, delta);
+            }
+        }
         // Button frames on top of the widgets; ModernTheme is final and must stay
         // the button theme so ThemedButton resolves the opaque btnText color.
         if (theme instanceof ModernTheme modern) {

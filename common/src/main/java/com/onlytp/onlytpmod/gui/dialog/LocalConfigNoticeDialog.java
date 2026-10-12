@@ -1,6 +1,5 @@
 package com.onlytp.onlytpmod.gui.dialog;
 
-import com.avalon.base.gui.GuiCursor;
 import com.avalon.base.gui.theme.GuiTheme;
 import com.avalon.base.gui.util.MouseButtons;
 import net.minecraft.client.Minecraft;
@@ -95,8 +94,6 @@ public final class LocalConfigNoticeDialog extends EnderDialog {
         boolean hover = overCheckbox(mouseX, mouseY);
         int labelColor = hover ? theme.titleColor() : theme.textColor();
         g.drawString(font, checkboxLabel, bx + LABEL_GAP, by + 1, labelColor, false);
-        // 勾选框是自绘控件，必须自己设手形；只设手形、不设箭头，避免盖掉按钮/输入框的光标
-        if (hover) GuiCursor.applyHand();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.onlytp.onlytpmod.gui;
 
-import com.avalon.base.gui.GuiCursor;
 import com.avalon.base.gui.anim.ScreenAnim;
 import com.avalon.base.gui.anim.ScreenAnimType;
 import com.avalon.base.gui.anim.ScrollAnim;
@@ -29,6 +28,7 @@ import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.gui.components.Renderable;
 
 /**
  * OnlyTP 配置界面（双主题：原版箱子风格 / 现代末影紫风格）。
@@ -218,6 +218,7 @@ public class OnlyTPScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(graphics, mouseX, mouseY, partialTick);
 
         // 开/关屏动画：命中测试换成动画坐标系，整屏内容（含原版按钮/输入框）随变换一起动
         mouseX = (int) anim.localX(mouseX, width);
@@ -318,7 +319,11 @@ public class OnlyTPScreen extends Screen {
             if (suspended) anim.resume(graphics, width, height);
         }
 
-        super.render(graphics, mouseX, mouseY, partialTick);
+        for (var child : children()) {
+            if (child instanceof Renderable childRenderable) {
+                childRenderable.render(graphics, mouseX, mouseY, partialTick);
+            }
+        }
 
         // One-pixel right-angle frames on modern-theme buttons only;
         // vanilla styled buttons keep their stock sprite look.
@@ -326,36 +331,6 @@ public class OnlyTPScreen extends Screen {
             ButtonFrames.render(graphics, this, modern.palette());
         }
 
-        // ─── 光标：可交互元素显示手形 ───
-        boolean showHand = false;
-        if (canEdit) {
-            for (var w : children()) {
-                if (w instanceof ThemedButton btn && btn.active && btn.isHoveredOrFocused()) {
-                    showHand = true;
-                    break;
-                }
-            }
-            if (!showHand) {
-                for (int i = 0; i < 4; i++) {
-                    if (modeRadios[i].isClicked(mouseX, mouseY, font, yo(modeRadios[i].relY))) {
-                        showHand = true;
-                        break;
-                    }
-                }
-            }
-            if (!showHand && (showPauseToggle.isClicked(mouseX, mouseY, font, yo(showPauseToggle.relY))
-                    || styleToggle.isClicked(mouseX, mouseY, font, yo(styleToggle.relY))
-                    || animToggle.isClicked(mouseX, mouseY, font, yo(animToggle.relY))
-                    || selectorToggle.isClicked(mouseX, mouseY, font, yo(selectorToggle.relY)))) {
-                showHand = true;
-            }
-            if (!showHand && hoveredRow >= 0 && isBlacklistVisible()) {
-                showHand = true;
-            }
-        }
-        // 1.21.8：没有帧末统一 apply 的光标请求队列，光标由 GLFW 直接设置；
-        // 只在需要手形时设手形、不设箭头，避免盖掉原版控件（按钮/输入框）自己设置的光标。
-        if (showHand) GuiCursor.applyHand();
 
         // Hover box for truncated radio/toggle labels (full original text). Drawn last so it
         // stays above cards, widgets and the read-only overlay. No-op while labels fit.
