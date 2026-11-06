@@ -1,0 +1,160 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+// 每个 target 有独立输出目录：模块源码共享，产物不能互相覆盖（targets/<t>/build/<module>/libs）。
+layout.buildDirectory = rootProject.layout.buildDirectory.dir(project.name)
+
+base {
+    archivesName = "${mod_id}-${project.name}-${mc_range_label}"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+// 仓库根的 LICENSE：target 是构建根，需回退一层
+def licenseFile = new File(rootProject.projectDir.parentFile, 'LICENSE')
+
+repositories {
+    maven {
+        name = 'Aliyun Central'
+        url = 'https://maven.aliyun.com/repository/central'
+    }
+    mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Sponge'
+                url = 'https://repo.spongepowered.org/repository/maven-public'
+            }
+        }
+        filter { includeGroupAndSubgroups('org.spongepowered') }
+    }
+    exclusiveContent {
+        forRepositories(
+                maven { name = 'ParchmentMC'; url = 'https://maven.parchmentmc.org/' },
+                maven { name = 'NeoForge'; url = 'https://maven.neoforged.net/releases' }
+        )
+        filter { includeGroup('org.parchmentmc.data') }
+    }
+    maven { name = 'BlameJared'; url = 'https://maven.blamejared.com' }
+    maven { name = 'MinecraftForge'; url = 'https://maven.minecraftforge.net/' }
+    maven { name = 'FabricMC'; url = 'https://maven.fabricmc.net/' }
+    maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/releases/' }
+}
+
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+    publishing.publications.configureEach {
+        suppressPomMetadataWarningsFor(variant)
+    }
+}
+
+// target 专属源码 / 资源覆盖：targets/<t>/overlay/<module>/{java,resources}。
+// 合并进生成目录后覆盖共享实现；各加载器模块通过 commonJava/commonResources 消费合并结果。
+def targetOverlayProperty = findProperty('target_overlay')
+if (targetOverlayProperty) {
+    def overlayRoot = rootProject.file(targetOverlayProperty)
+    def overlayJava = new File(overlayRoot, "${project.name}/java")
+    def overlayResources = new File(overlayRoot, "${project.name}/resources")
+    if (overlayJava.directory) {
+        def mergedJava = layout.buildDirectory.dir('merged/java')
+        def mergeJava = tasks.register('mergeTargetJava', Sync) {
+            from('src/main/java')
+            from(overlayJava) { include '**/*.java' }
+            into mergedJava
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        sourceSets.main.java.setSrcDirs([mergedJava])
+        tasks.named('compileJava') { dependsOn mergeJava }
+        tasks.named('javadoc') { dependsOn mergeJava }
+    }
+    if (overlayResources.directory) {
+        def mergedResources = layout.buildDirectory.dir('merged/resources')
+        def mergeResources = tasks.register('mergeTargetResources', Sync) {
+            from('src/main/resources')
+            from(overlayResources)
+            into mergedResources
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        sourceSets.main.resources.setSrcDirs([mergedResources])
+        processResources { dependsOn mergeResources }
+    }
+    def mergeTasks = tasks.matching { it.name in ['mergeTargetJava', 'mergeTargetResources'] }
+    tasks.configureEach {
+        if (name in ['sourcesJar', 'javadoc', 'processResources']) {
+            dependsOn mergeTasks
+        }
+    }
+}
+
+sourcesJar {
+    if (licenseFile.exists()) {
+        from(licenseFile) { rename { "${it}_${mod_name}" } }
+    }
+}
+
+jar {
+    if (licenseFile.exists()) {
+        from(licenseFile) { rename { "${it}_${mod_name}" } }
+    }
+    manifest {
+        attributes([
+                'Specification-Title'   : mod_name,
+                'Specification-Vendor'  : mod_author,
+                'Specification-Version' : project.jar.archiveVersion,
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.jar.archiveVersion,
+                'Implementation-Vendor' : mod_author,
+                'Built-On-Minecraft'    : minecraft_version
+        ])
+    }
+}
+
+processResources {
+    var expandProps = [
+            'version'                      : version,
+            'group'                        : project.group,
+            'minecraft_version'            : minecraft_version,
+            'minecraft_version_range'      : minecraft_version_range,
+            'fabric_version'               : fabric_version,
+            'fabric_loader_version'        : fabric_loader_version,
+            'mod_name'                     : mod_name,
+            'mod_author'                   : mod_author,
+            'mod_id'                       : mod_id,
+            'license'                      : license,
+            'description'                  : project.description,
+            'neoforge_version'             : project.hasProperty('neoforge_version') ? neoforge_version : '',
+            'credits'                      : credits,
+            'java_version'                 : java_version
+    ]
+
+    var jsonExpandProps = expandProps.collectEntries {
+        key, value -> [(key): value instanceof String ? value.replace("\n", "\\\\n") : value]
+    }
+
+    filesMatching(['META-INF/mods.toml', 'META-INF/neoforge.mods.toml']) {
+        expand expandProps
+    }
+    filesMatching(['pack.mcmeta', 'fabric.mod.json', '*.mixins.json', 'neoforge.mod.json']) {
+        expand jsonExpandProps
+    }
+    inputs.properties(expandProps)
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+        }
+    }
+}

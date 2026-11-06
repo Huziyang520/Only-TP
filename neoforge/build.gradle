@@ -3,16 +3,11 @@ plugins {
     id 'net.neoforged.moddev'
 }
 
-apply from: "${rootDir}/gradle/avalon-base.gradle"
-
-base {
-    archivesName = "${mod_id}-neoforge-${mc_range_label}"
-}
+apply from: "${rootProject.projectDir.parentFile}/gradle/avalon-base.gradle"
 
 neoForge {
     version = neoforge_version
 
-    // Automated decoration of Dependencies for Dev/Prod builds, and ModMaven publishing
     addModdingDependenciesTo(sourceSets.main)
 
     runs {
@@ -27,10 +22,7 @@ neoForge {
 }
 
 dependencies {
-    // AvalonBase 前置支持库：运行时作为 mod 依赖，由 onlytp 的 mods.toml 声明前置。
-    // jar 定位逻辑见 gradle/avalon-base.gradle（同目录残留历史版本时只会取最新那个）。
     implementation(files(resolveAvalonJar('neoforge')))
-    // nightconfig（TOML）：NeoForge 运行时自带，编译期显式声明以解析 common 的引用
     compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'
     compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
 }
