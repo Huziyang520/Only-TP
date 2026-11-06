@@ -1,0 +1,16 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.onlytp.onlytpmod.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+    ],
+    "client": [
+        "ClientSuggestionProviderMixin"
+    ],
+    "server": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

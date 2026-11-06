@@ -24,8 +24,8 @@ dependencies {
     // AvalonBase 升版时必须同步修改此处文件名。
     // 注：common 为 NeoForge moddev 模块，无 loom，只能用普通 compileOnly。
     // named 映射：loom 的 build/libs 是 intermediary 产物，common 为 moddev（official）编译，只能用 devlibs 的 dev jar。
-    compileOnly fileTree(project.file("../../../AvalonBase/1.21.2-1.21.5/fabric/build/devlibs")) {
-        include "avalonbase-fabric-1.21.5-1.5.1-dev.jar"
+    compileOnly fileTree(project.file("../../../${avalon_dir}/fabric/build/devlibs")) {
+        include avalon_fabric_dev_jar
     }
 }
 

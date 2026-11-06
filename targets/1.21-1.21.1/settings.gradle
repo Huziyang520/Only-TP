@@ -1,0 +1,31 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Aliyun Gradle Plugin Portal'
+            url = 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        gradlePluginPortal()
+        mavenCentral()
+        maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        maven { name = 'Sponge Snapshots'; url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { name = 'NeoForge'; url = 'https://maven.neoforged.net/releases' }
+        maven { name = 'ParchmentMC'; url = 'https://maven.parchmentmc.org' }
+        maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/releases/' }
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
+// 1.21.X 线的一个 target。common / fabric / neoforge 在仓库根，由所有 target 共享；
+// 这里只声明本区间的依赖版本，源码差异走 targets/<t>/overlay/。
+rootProject.name = 'OnlyTP-1.21-1.21.1'
+includeBuild('../../build-logic')
+include 'common'
+include 'fabric'
+include 'neoforge'
+project(':common').projectDir = file('../../common')
+project(':fabric').projectDir = file('../../fabric')
+project(':neoforge').projectDir = file('../../neoforge')
