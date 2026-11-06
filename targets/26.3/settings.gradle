@@ -34,12 +34,13 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
-plugins {
-    id 'net.fabricmc.fabric-loom' version '1.17.21' apply false
-}
-
-// This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
-rootProject.name = 'OnlyTP'
-include("common")
-include("fabric")
-include("neoforge")
+// 26.X 线的一个 target。common / fabric / neoforge 三个模块在仓库根，由所有 target 共享，
+// 这里只做指向；每个 target 只声明自己的版本区间、依赖版本与可选源码覆盖。
+rootProject.name = 'OnlyTP-26.3'
+includeBuild('../../build-logic')
+include 'common'
+include 'fabric'
+include 'neoforge'
+project(':common').projectDir = file('../../common')
+project(':fabric').projectDir = file('../../fabric')
+project(':neoforge').projectDir = file('../../neoforge')

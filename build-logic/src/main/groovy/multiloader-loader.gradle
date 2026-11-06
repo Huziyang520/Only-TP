@@ -3,10 +3,10 @@ plugins {
 }
 
 configurations {
-    commonJava{
+    commonJava {
         canBeResolved = true
     }
-    commonResources{
+    commonResources {
         canBeResolved = true
     }
 }
@@ -15,6 +15,15 @@ dependencies {
     compileOnly(project(':common'))
     commonJava project(path: ':common', configuration: 'commonJava')
     commonResources project(path: ':common', configuration: 'commonResources')
+}
+
+// common 可能把 target 专属源码合并进生成目录（mergeTargetJava），加载器模块通过
+// commonJava 消费该目录，必须显式依赖产出任务，否则 Gradle 8+ 会报隐式依赖。
+final def commonMerge = project(':common').tasks.matching { it.name == 'mergeTargetJava' }
+tasks.configureEach {
+    if (name in ['compileJava', 'sourcesJar', 'javadoc', 'processResources']) {
+        dependsOn commonMerge
+    }
 }
 
 tasks.named('compileJava', JavaCompile) {

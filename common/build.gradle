@@ -40,6 +40,28 @@ configurations {
     }
 }
 
+// 可选：target 专属源码覆盖（targets/<t>/overlay/common/java）。合并进生成的源码目录后，
+// 覆盖文件替换共享实现；加载器模块通过 commonJava 消费合并后的源码树。
+def targetOverlay = findProperty('target_overlay')
+if (targetOverlay) {
+    def overlayRoot = rootProject.file(targetOverlay)
+    if (new File(overlayRoot, 'common/java').directory) {
+        def mergedJava = layout.buildDirectory.dir('merged/java')
+        def mergeJava = tasks.register('mergeTargetJava', Sync) {
+            from('src/main/java')
+            from(new File(overlayRoot, 'common/java')) {
+                include '**/*.java'
+            }
+            into mergedJava
+            // 后加入的覆盖层优先，覆盖同名文件
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        sourceSets.main.java.setSrcDirs([mergedJava])
+        tasks.named('compileJava') { dependsOn mergeJava }
+        tasks.named('sourcesJar') { dependsOn mergeJava }
+    }
+}
+
 artifacts {
     commonJava sourceSets.main.java.sourceDirectories.singleFile
     commonResources sourceSets.main.resources.sourceDirectories.singleFile
