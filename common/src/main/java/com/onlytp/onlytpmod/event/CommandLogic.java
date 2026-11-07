@@ -9,18 +9,13 @@ import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.server.permissions.Permissions;
 
 /**
- * 
- *
  * <p>提供两个等价入口：
- * <ul>
- *   <li>{@link #shouldCancel(ParseResults)} —— Forge 侧（已有 ParseResults）</li>
- *   <li>{@link #shouldCancel(CommandSourceStack, String)} —— Fabric mixin 侧（只有 source 与命令字符串）</li>
- * </ul>
  * 两者共享同一套判定逻辑。
  */
 public class CommandLogic {
 
     /**
+     * /**
      * Forge 侧入口：已有解析结果。
      */
     public static boolean shouldCancel(ParseResults<CommandSourceStack> parseResults) {
@@ -32,6 +27,7 @@ public class CommandLogic {
     }
 
     /**
+     * /**
      * Fabric mixin 侧入口：只有命令源与命令字符串，自行解析命令名。
      */
     public static boolean shouldCancel(CommandSourceStack source, String raw) {
@@ -41,6 +37,7 @@ public class CommandLogic {
     }
 
     /**
+     * /**
      * 从 ParseResults 提取命令名（优先用已解析节点，解析失败则退回原始字符串）。
      */
     private static String resolveCommandName(ParseResults<CommandSourceStack> parse, String raw) {
@@ -51,6 +48,7 @@ public class CommandLogic {
     }
 
     /**
+     * /**
      * 从原始命令字符串提取第一个词作为命令名（去掉可选的前导 '/'）。
      */
     private static String resolveCommandNameFromRaw(String raw) {
@@ -101,12 +99,8 @@ public class CommandLogic {
     }
 
     /**
+     * /**
      * 目标选择器开关关闭时，拒绝**含选择器**的提权指令。
-     *
-     * <p>只关客户端是不够的：服务端是"用全权限源提权执行"，选择器天然不受限。因此在提权之前
-     * 再拦一次，保证"关闭 = 真的不能用"。
-     *
-     * @return true 表示已拦截（并已提示玩家）
      */
     private static boolean deniesEntitySelector(String raw, ServerPlayer player) {
         if (OnlyTPConfig.allowEntitySelectors()) return false;

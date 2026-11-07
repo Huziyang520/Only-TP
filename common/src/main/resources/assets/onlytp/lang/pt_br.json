@@ -26,5 +26,6 @@
   "message.onlytp.blocked_gamemode": "A troca de modo de jogo foi desativada pelo administrador!",
   "message.onlytp.selector_blocked": "Only TP: Seletores de alvo não são permitidos!",
   "message.onlytp.notice_config_ui": "Only TP: A tela de configuração visual requer AvalonBase ou Cloth Config API. Este aviso pode ser desativado na tela de configuração ou no arquivo de configuração.",
-  "onlytp.feedback": "Endereço de feedback alternativo"
+  "onlytp.feedback": "Endereço de feedback alternativo",
+  "gui.onlytp.mode_label": "Modo:"
 }

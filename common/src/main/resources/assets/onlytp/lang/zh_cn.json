@@ -30,5 +30,6 @@
   "gui.onlytp.scope.common": "通用",
   "gui.onlytp.scope.client": "客户端",
   "gui.onlytp.show_tips": "显示提示",
-  "gui.onlytp.command_whitelist": "OP 指令白名单"
+  "gui.onlytp.command_whitelist": "OP 指令白名单",
+  "gui.onlytp.mode_label": "模式选择："
 }

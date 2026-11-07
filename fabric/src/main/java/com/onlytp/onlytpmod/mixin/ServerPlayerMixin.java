@@ -11,9 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Fabric 游戏模式切换拦截（等价于原 Forge PlayerChangeGameModeEvent）。
  * 在 setGameMode 时捕获旧模式，若应拦截则取消本次切换（模式保持旧值，等价于原版回滚）。
- *
  * <p>注意：setGameMode 存在多个重载（ServerPlayer 的返回 boolean，Player 的返回 void），
- * 因此必须用完整描述符指定目标方法，避免 mixin 因签名歧义而失败。
  */
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {

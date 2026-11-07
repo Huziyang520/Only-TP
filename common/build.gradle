@@ -57,7 +57,6 @@ if (targetOverlay) {
         }
         sourceSets.main.java.setSrcDirs([mergedJava])
         tasks.named('compileJava') { dependsOn mergeJava }
-        tasks.named('sourcesJar') { dependsOn mergeJava }
     }
 }
 

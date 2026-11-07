@@ -26,5 +26,6 @@
   "message.onlytp.blocked_gamemode": "관리자가 게임 모드 전환을 금지했습니다!",
   "message.onlytp.selector_blocked": "Only TP: 대상 선택기는 허용되지 않습니다!",
   "message.onlytp.notice_config_ui": "Only TP: 시각적 설정 화면에는 AvalonBase 또는 Cloth Config API가 필요합니다. 이 알림은 설정 화면이나 설정 파일에서 끌 수 있습니다.",
-  "onlytp.feedback": "대체 피드백 주소"
+  "onlytp.feedback": "대체 피드백 주소",
+  "gui.onlytp.mode_label": "모드:"
 }

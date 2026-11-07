@@ -12,12 +12,8 @@ import java.lang.reflect.Constructor;
 
 /**
  * 模组列表的「配置」按钮入口。
- *
  * <p>具体界面由平台决定：NeoForge 用自带的 ConfigurationScreen，Fabric 用 Cloth 生成的界面。
  * 两者都没有时返回 {@code null}，按钮置灰——不会退到暂停界面按钮所用的 AvalonBase 界面。
- *
- * <p><b>字节码约束</b>：本类不得静态引用 {@code OnlyTPScreen}（它引用 AvalonBase 类型），
- * 一律在 {@link AvalonLink#isAvalonLoaded()} 守卫后反射创建。
  */
 public final class ConfigScreenEntry {
 

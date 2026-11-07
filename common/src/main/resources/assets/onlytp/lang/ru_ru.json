@@ -26,5 +26,6 @@
   "message.onlytp.blocked_gamemode": "Переключение игрового режима отключено администратором!",
   "message.onlytp.selector_blocked": "Only TP: Селекторы цели запрещены!",
   "message.onlytp.notice_config_ui": "Only TP: Для визуального экрана настроек требуется AvalonBase или Cloth Config API. Это уведомление можно отключить в экране настроек или в файле конфигурации.",
-  "onlytp.feedback": "Резервный адрес обратной связи"
+  "onlytp.feedback": "Резервный адрес обратной связи",
+  "gui.onlytp.mode_label": "Режим:"
 }

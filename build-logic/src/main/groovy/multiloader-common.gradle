@@ -12,14 +12,6 @@ base {
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(java_version)
-    withSourcesJar()
-    withJavadocJar()
-}
-
-// Javadoc 使用 UTF-8 编码，避免中文注释在 Windows（GBK）平台下解析失败
-tasks.withType(Javadoc).configureEach {
-    options.encoding = 'UTF-8'
-    options.addStringOption('Xdoclint:none', '-quiet')
 }
 
 // 仓库根目录的 LICENSE：target 是构建根，所以要跨一层回仓库根
@@ -85,17 +77,9 @@ repositories {
 
 // 本地多端构建无需显式 capability 声明（原模板用于 Maven 发布场景的坐标匹配）。
 // 手动声明 capability 会与 Fabric Loom 自动生成的 variant（如 modCompileClasspathMainMapped）产生冲突。
-['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+['apiElements', 'runtimeElements'].each { variant ->
     publishing.publications.configureEach {
         suppressPomMetadataWarningsFor(variant)
-    }
-}
-
-sourcesJar {
-    if (licenseFile.exists()) {
-        from(licenseFile) {
-            rename { "${it}_${mod_name}" }
-        }
     }
 }
 

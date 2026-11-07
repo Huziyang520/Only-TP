@@ -26,5 +26,6 @@
   "message.onlytp.blocked_gamemode": "Das Umschalten des Spielmodus wurde vom Admin deaktiviert!",
   "message.onlytp.selector_blocked": "Only TP: Ziel-Selektoren sind nicht erlaubt!",
   "message.onlytp.notice_config_ui": "Only TP: Die visuelle Konfigurationsoberfläche benötigt AvalonBase oder Cloth Config API. Dieser Hinweis lässt sich in der Oberfläche oder der Konfigurationsdatei abschalten.",
-  "onlytp.feedback": "Alternative Feedback-Adresse"
+  "onlytp.feedback": "Alternative Feedback-Adresse",
+  "gui.onlytp.mode_label": "Modus:"
 }

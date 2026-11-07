@@ -21,7 +21,7 @@ dependencies {
 // commonJava 消费该目录，必须显式依赖产出任务，否则 Gradle 8+ 会报隐式依赖。
 final def commonMerge = project(':common').tasks.matching { it.name == 'mergeTargetJava' }
 tasks.configureEach {
-    if (name in ['compileJava', 'sourcesJar', 'javadoc', 'processResources']) {
+    if (name in ['compileJava', 'processResources']) {
         dependsOn commonMerge
     }
 }
@@ -36,14 +36,3 @@ processResources {
     from(configurations.commonResources)
 }
 
-tasks.named('javadoc', Javadoc).configure {
-    dependsOn(configurations.commonJava)
-    source(configurations.commonJava)
-}
-
-tasks.named('sourcesJar', Jar) {
-    dependsOn(configurations.commonJava)
-    from(configurations.commonJava)
-    dependsOn(configurations.commonResources)
-    from(configurations.commonResources)
-}

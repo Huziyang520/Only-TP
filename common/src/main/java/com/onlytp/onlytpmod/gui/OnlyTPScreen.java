@@ -265,13 +265,6 @@ public class OnlyTPScreen extends Screen {
                     // (rendered on top at the end of the frame) instead of inside the row,
                     // matching AuthCmd, so it can never overlap long localized entry text.
                     rowRemoveHint = Component.translatable("gui.onlytp.click_to_remove").getString();
-                    // ─────────────────────────────────────────────────────────────
-                    // 备用方案：行内右对齐红字提示（悬停时直接绘制在名单行右侧）。
-                    // 该方案作为备用方案，不得随意删除。
-                    // String hint = Component.translatable("gui.onlytp.click_to_remove").getString();
-                    // // 颜色必须带 FF 不透明 alpha（0xFFFF5555）；写成 0xFF5555 会被当作 ARGB → alpha=0 → 全透明不可见
-                    // graphics.text(font, hint, rowRightX - font.width(hint) - 6, y, 0xFFFF5555, false);
-                    // ─────────────────────────────────────────────────────────────
                 }
                 graphics.text(font, bl.get(idx),
                         guiLeft + 22, y, canEdit ? theme.textColor() : theme.disabledColor(), false);
@@ -466,9 +459,8 @@ public class OnlyTPScreen extends Screen {
     // ═══════════ 辅助方法 ═══════════
 
     /**
+     * /**
      * 悬停提示框。现代主题用自绘金框（{@link PanelHover}，与面板风格统一）；
-     * 「原版风格纹理」开启时改用原版 {@link GuiGraphicsExtractor#setTooltipForNextFrame}
-     * —— 原版提示框（九宫格贴图 + 原版配色）能被资源包与其它模组正常改写。
      */
     private void showTip(GuiGraphicsExtractor g, String text, int mouseX, int mouseY) {
         if (localUseVanilla) {

@@ -16,7 +16,6 @@ import net.minecraft.resources.Identifier;
 
 /**
  * Fabric 客户端：在暂停界面注入配置按钮（AvalonBase 界面的唯一入口）。
- *
  * <p>未安装 AvalonBase 时按钮不存在；界面类名一律在 {@link ConfigScreenEntry} 内反射创建，
  * 本类不引用任何 Avalon 类型。
  */

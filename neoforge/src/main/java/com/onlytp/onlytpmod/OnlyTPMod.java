@@ -22,10 +22,8 @@ import org.slf4j.Logger;
 
 /**
  * NeoForge 入口。
- *
  * <p>不能用 {@code @Mod.EventBusSubscriber}：mod 构造阶段会强制加载事件类，进而解析其
  * 引用的客户端类型（未装 AvalonBase 时 {@code NoClassDefFoundError}）。
- * 26.x 已移除 Dist，客户端事件直接注册（服务端不会触发，无影响）。
  */
 @Mod(Constants.MOD_ID)
 public class OnlyTPMod {

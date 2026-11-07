@@ -7,13 +7,8 @@ import net.minecraft.client.gui.screens.Screen;
 
 /**
  * Screen-layer one-pixel right-angle frames for {@link ThemedButton}s.
- *
  * <p>The frame cannot be added by wrapping {@code GuiTheme}: AvalonBase's
  * ModernTheme is final and ThemedButton only reads btnText from an actual
- * ModernTheme instance, so a wrapper makes the fallback text color 0xFFFFFF
- * (zero alpha) and button labels render fully transparent. Keeping the real
- * ModernTheme as the button theme and outlining buttons here after the
- * widgets have rendered avoids touching AvalonBase.</p>
  */
 public final class ButtonFrames {
 
@@ -21,12 +16,8 @@ public final class ButtonFrames {
     }
 
     /**
+     * /**
      * Outline every themed button on the screen, active or not.
-     *
-     * <p>Inactive buttons used to be skipped, which made a disabled button (for example the
-     * "Add" button while the input box is empty) look like it had no border at all. The
-     * border is now always drawn; only an active, hovered button is highlighted with the
-     * accent colour, so a disabled button stays visually "flat" but still framed.
      */
     public static void render(GuiGraphicsExtractor g, Screen screen, Palette palette) {
         for (var child : screen.children()) {

@@ -10,9 +10,7 @@ import java.util.function.Predicate;
 /**
  * 注册命令后修改 tp/teleport 节点的 requirement，使非 OP 玩家也能看到并补全 TP 命令。
  * 使用反射而非 Mixin Accessor，避免 LiteralCommandNode 转型失败。
- *
  * <p>由平台侧（Forge RegisterCommandsEvent / Fabric CommandRegistrationCallback）调用
- * {@link #patch(CommandNode)} 传入命令树的根节点。
  */
 public class CommandRegistrationLogic {
 

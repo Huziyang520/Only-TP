@@ -12,11 +12,8 @@ import net.minecraft.world.level.GameType;
 public class GameModeLogic {
 
     /**
+     * /**
      * 判断是否应拦截本次游戏模式切换。
-     *
-     * @param player   切换游戏模式的玩家
-     * @param oldGameMode 当前（切换前）的游戏模式
-     * @return true 表示应拦截（回滚到旧模式）
      */
     public static boolean shouldBlock(ServerPlayer player, GameType oldGameMode) {
         // 仅在 block_non_tp 或 both 模式拦截

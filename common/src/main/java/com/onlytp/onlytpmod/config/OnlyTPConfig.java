@@ -11,10 +11,17 @@ import java.util.List;
 
 /**
  * Only TP 配置：服务端判定项在 {@code onlytp-common.toml}，本机偏好项在 {@code onlytp-client.toml}。
- *
  * <p>字段与默认值由 schema 声明，读写、界面与下发由 Camelot 处理，本类只提供取值与业务判定。
  */
 public final class OnlyTPConfig {
+
+    /** 生效模式；常量名即配置文件里写的值，NeoForge 界面据此渲染成点击切换按钮。 */
+    public enum Mode {
+        allow_tp_only,
+        block_non_tp,
+        both,
+        disabled
+    }
 
     public static final String MODE_ALLOW_TP = "allow_tp_only";
     public static final String MODE_BLOCK_NON_TP = "block_non_tp";
@@ -28,8 +35,7 @@ public final class OnlyTPConfig {
     public static final ConfigSchema COMMON_SCHEMA = new ConfigSchema("onlytp", ConfigScope.COMMON,
             "gui.onlytp.title",
             List.of(
-                    ConfigOption.select("mode", MODE_DISABLED,
-                            MODE_ALLOW_TP, MODE_BLOCK_NON_TP, MODE_BOTH, MODE_DISABLED),
+                    ConfigOption.select("mode", Mode.disabled),
                     ConfigOption.bool("allow_entity_selectors", true),
                     ConfigOption.bool("enable_config_entry", true).legacy("show_pause_button"),
                     ConfigOption.list("mode_allow_tp_only", List.of()),

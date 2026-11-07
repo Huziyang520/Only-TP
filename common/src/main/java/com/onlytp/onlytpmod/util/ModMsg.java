@@ -18,20 +18,8 @@ import java.util.Map;
 
 /**
  * 聊天提示的统一出口（红色 + 兜底文案）。
- *
  * <p><b>为什么需要兜底</b>：Only TP 是服务端侧模组，{@link Component#translatable(String)}
  * 的翻译是在<b>接收端</b>解析的。接收端（客户端）没装本模组时解析不到语言文件，聊天里会
- * 直接显示原始 key（实测 {@code message.onlytp.blocked}）。因此统一改用
- * {@link Component#translatableWithFallback(String, String)}：装了模组的客户端按自己的语言
- * 显示，没装的客户端显示兜底文案。
- *
- * <p><b>兜底来源</b>：按玩家客户端上报的语言代码（{@link ServerPlayer#clientInformation()}
- * 的 language，形如 {@code zh_cn} / {@code en_us}）读取模组自带语言文件
- * {@code /assets/onlytp/lang/<lang>.json}，读不到该语言则回退 {@code en_us.json}，
- * 再读不到则回退硬编码英文——保证任何异常路径都不会把原始 key 甩给玩家。
- *
- * <p><b>颜色</b>：不再写在语言文件里（旧式 {@code §} 颜色码在第三方 UI 库下不生效，
- * 实测红色提示变白），改由 {@link ChatFormatting#RED} 组件样式给出。
  */
 public final class ModMsg {
 
