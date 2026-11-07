@@ -11,11 +11,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 
-/**
- * Fabric entry point.
- * <p>Command and game mode blocking lives in the mixin package; config IO, screens,
- * syncing and hot reload belong to Camelot, so this class only registers configs and resends the command tree.
- */
 public class OnlyTPMod implements ModInitializer {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -30,7 +25,6 @@ public class OnlyTPMod implements ModInitializer {
         LOGGER.info("Only TP Mod loaded!");
     }
 
-    /** Resends the command tree after a config change so client suggestions follow. */
     private static void resendCommands(MinecraftServer server) {
         if (server == null) {
             return;

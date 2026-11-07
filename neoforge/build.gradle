@@ -4,7 +4,7 @@ plugins {
 }
 neoForge {
     version = neoforge_version
-    // Automatically enable neoforge AccessTransformers if the file exists
+
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
@@ -38,16 +38,13 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    // AvalonBase 前置支持库：运行时作为 mod 依赖
-    // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
-    // AvalonBase 升版时必须同步修改此处文件名。
+
     implementation fileTree(project.file("../../../AvalonBase/26.3/neoforge/build/libs")) {
         include "avalonbase-neoforge-26.3-1.5.1.jar"
         exclude "*-sources.jar"
         exclude "*-javadoc.jar"
     }
-    // nightconfig（TOML）：已由内置前置库 Camelot 提供，本模组不再声明
-    // 内置前置库 Camelot：编译期 + 随 jar 打包（Jar-in-Jar），玩家零安装
+
     implementation "com.camelot:camelot-neoforge-${mc_range_label}:${camelot_version}"
     jarJar "com.camelot:camelot-neoforge-${mc_range_label}:${camelot_version}"
 }

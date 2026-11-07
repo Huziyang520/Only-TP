@@ -9,13 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Only TP config: server rules in {@code onlytp-common.toml}, local preferences in {@code onlytp-client.toml}.
- * <p>The schema declares keys and defaults; Camelot handles IO, screens and syncing.
- */
 public final class OnlyTPConfig {
 
-    /** Active mode; constants are the values written to the file and the labels of the cycle button. */
     public enum Mode {
         allow_tp_only,
         block_non_tp,
@@ -28,7 +23,6 @@ public final class OnlyTPConfig {
     public static final String MODE_BOTH = "both";
     public static final String MODE_DISABLED = "disabled";
 
-    /** Vanilla commands that need no cheats, used as the default operator whitelist. */
     private static final List<String> DEFAULT_OP_WHITELIST = List.of(
             "help", "me", "say", "tell", "msg", "w", "trigger", "list", "seed");
 
@@ -50,10 +44,8 @@ public final class OnlyTPConfig {
                     ConfigOption.bool("enable_animations", true),
                     ConfigOption.switchInt("show_tips", 1)));
 
-    /** Synced, server-wide config. */
     public static final CamelotConfig CONFIG = new CamelotConfig(COMMON_SCHEMA);
 
-    /** Local-only config, never synced. */
     public static final CamelotConfig CLIENT = new CamelotConfig(CLIENT_SCHEMA);
 
     private OnlyTPConfig() {
@@ -63,8 +55,6 @@ public final class OnlyTPConfig {
         return new CamelotConfig[]{CONFIG, CLIENT};
     }
 
-    // values
-
     public static String mode() {
         return CONFIG.getString("mode");
     }
@@ -73,7 +63,6 @@ public final class OnlyTPConfig {
         return CONFIG.getBool("allow_entity_selectors");
     }
 
-    /** Config entry switch: when off the pause button disappears and the entry shows a closed notice. */
     public static boolean enableConfigEntry() {
         return CONFIG.getBool("enable_config_entry");
     }
@@ -98,8 +87,6 @@ public final class OnlyTPConfig {
         return CONFIG.getList("command_whitelist");
     }
 
-    // rules
-
     public static List<String> currentBlacklist() {
         return switch (mode()) {
             case MODE_ALLOW_TP -> blacklistAllowTp();
@@ -116,7 +103,6 @@ public final class OnlyTPConfig {
         return "tp".equals(commandName) || "teleport".equals(commandName);
     }
 
-    /** Hit by the operator command whitelist; only unblocks operators in block_non_tp mode. */
     public static boolean isWhitelistedForOp(String commandName) {
         return commandName != null && commandWhitelistOp().contains(commandName);
     }
@@ -137,7 +123,6 @@ public final class OnlyTPConfig {
         return MODE_BOTH.equals(mode());
     }
 
-    /** Written back by the screen: applies immediately and persists (a server may override it later). */
     public static void applyAndSave(String newMode, boolean selectors, boolean entry, boolean animations,
                                     int buttonStyle, List<String> allowTp, List<String> blockNonTp) {
         CONFIG.set("mode", newMode);

@@ -14,11 +14,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-/**
- * Fabric client: injects the config button into the pause screen (the only AvalonBase entry).
- * <p>The button is absent without AvalonBase; screen classes are created reflectively in ConfigScreenEntry,
- * so this class never references Avalon types.
- */
 public class GuiEventHandler {
 
     private static final Identifier BUTTON_TEXTURE =
@@ -30,7 +25,6 @@ public class GuiEventHandler {
             if (!AvalonLink.isAvalonLoaded()) return;
             if (Minecraft.getInstance().player == null) return;
 
-            // Reloads from the local file when hosting, so manual edits reach the button without a restart
             if (Minecraft.getInstance().hasSingleplayerServer()) OnlyTPConfig.CONFIG.reload();
             if (!OnlyTPConfig.enableConfigEntry()) return;
 

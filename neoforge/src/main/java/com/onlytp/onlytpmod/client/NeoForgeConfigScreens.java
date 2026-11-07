@@ -5,9 +5,6 @@ import com.onlytp.onlytpmod.gui.ConfigScreenEntry;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
-/**
- * Mod list config extension; the screen itself is NeoForge's ConfigurationScreen.
- */
 public final class NeoForgeConfigScreens {
 
     private NeoForgeConfigScreens() {

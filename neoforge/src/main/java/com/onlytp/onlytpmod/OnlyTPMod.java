@@ -21,11 +21,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.slf4j.Logger;
 
-/**
- * NeoForge entry point.
- * <p>Do not use {@code @Mod.EventBusSubscriber}: the mod constructor would load the event class,
- * which resolves client types and fails with {@code NoClassDefFoundError} without AvalonBase.
- */
 @Mod(Constants.MOD_ID)
 public class OnlyTPMod {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -42,7 +37,6 @@ public class OnlyTPMod {
         LOGGER.info("Only TP Mod loaded!");
     }
 
-    /** Resends the command tree after a config change so client suggestions follow. */
     private static void resendCommands(MinecraftServer server) {
         if (server == null) {
             return;

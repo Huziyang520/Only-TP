@@ -3,7 +3,6 @@ plugins {
     id 'maven-publish'
 }
 
-// 每个 target 有独立输出目录：模块源码共享，产物不能互相覆盖（targets/<t>/build/<module>/libs）。
 layout.buildDirectory = rootProject.layout.buildDirectory.dir(project.name)
 
 base {
@@ -14,19 +13,18 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(java_version)
 }
 
-// 仓库根目录的 LICENSE：target 是构建根，所以要跨一层回仓库根
 def licenseFile = new File(rootProject.projectDir.parentFile, 'LICENSE')
 
 repositories {
-    // 本地构建：内置前置库 Camelot 从 mavenLocal 消费（先构建 Camelot 并 publishToMavenLocal）
+
     mavenLocal()
-    // 国内镜像（阿里云）优先，无法代理的仓库回退到原地址
+
     maven {
         name = 'Aliyun Central'
         url = 'https://maven.aliyun.com/repository/central'
     }
     mavenCentral()
-    // https://docs.gradle.org/current/userguide/declaring_repositories.html#declaring_content_exclusively_found_in_one_repository
+
     exclusiveContent {
         forRepository {
             maven {
@@ -54,29 +52,27 @@ repositories {
         url = 'https://maven.blamejared.com'
     }
     maven {
-        // ForgeGradle 6 的 minecraft/forge 依赖与插件
+
         name = 'MinecraftForge'
         url = 'https://maven.minecraftforge.net/'
     }
     maven {
-        // Fabric 相关依赖（fabric-loader、fabric-api）
+
         name = 'FabricMC'
         url = 'https://maven.fabricmc.net/'
     }
     maven {
-        // Cloth Config API（可选界面依赖，仅编译期）
+
         name = 'Shedaniel'
         url = 'https://maven.shedaniel.me/'
     }
     maven {
-        // Mod Menu（Fabric 模组列表配置入口，编译期）
+
         name = 'TerraformersMC'
         url = 'https://maven.terraformersmc.com/releases/'
     }
 }
 
-// 本地多端构建无需显式 capability 声明（原模板用于 Maven 发布场景的坐标匹配）。
-// 手动声明 capability 会与 Fabric Loom 自动生成的 variant（如 modCompileClasspathMainMapped）产生冲突。
 ['apiElements', 'runtimeElements'].each { variant ->
     publishing.publications.configureEach {
         suppressPomMetadataWarningsFor(variant)
@@ -106,7 +102,7 @@ jar {
 processResources {
     var expandProps = [
             'version'                      : version,
-            'group'                        : project.group, //Else we target the task's group.
+            'group'                        : project.group,
             'minecraft_version'            : minecraft_version,
             'minecraft_version_range'      : minecraft_version_range,
             'fabric_version'               : fabric_version,

@@ -5,7 +5,7 @@ plugins {
 
 neoForge {
     neoFormVersion = neo_form_version
-    // Automatically enable AccessTransformers if the file exists
+
     def at = file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
@@ -15,13 +15,9 @@ neoForge {
 dependencies {
     compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-    // 内置前置库 Camelot（configured / UI / 网络）：编译期只需要它的通用类
+
     compileOnly "com.camelot:camelot-common-${mc_range_label}:${camelot_version}"
 
-    // AvalonBase 前置支持库（GUI 主题 / 平台抽象 / 网络框架）：编译期引用其 fabric dev jar（named 映射）
-    // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
-    // AvalonBase 升版时必须同步修改此处文件名。
-    // 注：common 为 NeoForge moddev 模块，无 loom，只能用普通 compileOnly。
     compileOnly fileTree(project.file("../../../AvalonBase/26.3/fabric/build/libs")) {
         include "avalonbase-fabric-26.3-1.5.1.jar"
         exclude "*sources*", "*javadoc*"
@@ -39,8 +35,6 @@ configurations {
     }
 }
 
-// 可选：target 专属源码覆盖（targets/<t>/overlay/common/java）。合并进生成的源码目录后，
-// 覆盖文件替换共享实现；加载器模块通过 commonJava 消费合并后的源码树。
 def targetOverlay = findProperty('target_overlay')
 if (targetOverlay) {
     def overlayRoot = rootProject.file(targetOverlay)
@@ -52,7 +46,7 @@ if (targetOverlay) {
                 include '**/*.java'
             }
             into mergedJava
-            // 后加入的覆盖层优先，覆盖同名文件
+
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
         }
         sourceSets.main.java.setSrcDirs([mergedJava])

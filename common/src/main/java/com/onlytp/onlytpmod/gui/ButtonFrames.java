@@ -5,20 +5,11 @@ import com.avalon.base.gui.theme.ThemedButton;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 
-/**
- * Screen-layer one-pixel right-angle frames for {@link ThemedButton}s.
- * <p>The frame cannot be added by wrapping {@code GuiTheme}: AvalonBase's
- * ModernTheme is final and ThemedButton only reads btnText from an actual
- */
 public final class ButtonFrames {
 
     private ButtonFrames() {
     }
 
-    /**
-     * /**
-     * Outline every themed button on the screen, active or not.
-     */
     public static void render(GuiGraphicsExtractor g, Screen screen, Palette palette) {
         for (var child : screen.children()) {
             if (!(child instanceof ThemedButton btn)) {

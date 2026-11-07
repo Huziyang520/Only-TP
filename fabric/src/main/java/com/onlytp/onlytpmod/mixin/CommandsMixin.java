@@ -9,11 +9,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Fabric command blocking (equivalent to Forge's CommandEvent).
- * Hooks Commands.performCommand(ParseResults, String), the same point Forge fires CommandEvent,
- * and cancels using the already parsed result.
- */
 @Mixin(Commands.class)
 public class CommandsMixin {
 

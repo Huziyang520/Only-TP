@@ -11,11 +11,6 @@ import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Constructor;
 
-/**
- * Config button entry of the mod list.
- * <p>The platform decides the screen: NeoForge's own ConfigurationScreen, or a Cloth screen on Fabric.
- * Returns {@code null} when neither exists, so the button is disabled rather than falling back anywhere.
- */
 public final class ConfigScreenEntry {
 
     private static final String AVALON_SCREEN = "com.onlytp.onlytpmod.gui.OnlyTPScreen";
@@ -23,7 +18,6 @@ public final class ConfigScreenEntry {
     private ConfigScreenEntry() {
     }
 
-    /** Mod list entry: a closed notice inside a world, otherwise the platform screen. */
     public static Screen create(Screen parent) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && !OnlyTPConfig.enableConfigEntry()) {
@@ -35,7 +29,6 @@ public final class ConfigScreenEntry {
         return ConfigScreens.create(Constants.MOD_ID, parent);
     }
 
-    /** Pause button: the only entry to the AvalonBase screen; does nothing without AvalonBase. */
     public static void openAvalonScreen() {
         Screen screen = avalonScreen(null);
         if (screen != null) {

@@ -16,25 +16,18 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Single outlet for chat messages (red text plus a fallback string).
- * <p><b>Why a fallback</b>: Only TP runs on the server and {@link Component#translatable(String)}
- * resolves on the receiving side; a client without the mod cannot read the language files
- */
 public final class ModMsg {
 
     private static final String MOD_ID = "onlytp";
     private static final String FALLBACK_LANG = "en_us";
-    /** Last resort when the language file is missing too. */
+
     private static final String HARD_FALLBACK = "This action has been disabled by the administrator!";
 
-    /** Language code to (key to text); each language is parsed once. */
     private static final Map<String, Map<String, String>> CACHE = new HashMap<>();
 
     private ModMsg() {
     }
 
-    /** Red chat message: resolved by the receiver's own language, with a same-language fallback. */
     public static MutableComponent red(Player player, String key) {
         return Component.translatableWithFallback(key, fallback(player, key)).withStyle(ChatFormatting.RED);
     }
@@ -49,7 +42,6 @@ public final class ModMsg {
         return value != null ? stripLegacyColor(value) : HARD_FALLBACK;
     }
 
-    /** Language reported by the client; falls back to the base language when unavailable. */
     private static String clientLanguage(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             String language = serverPlayer.clientInformation().language();
@@ -74,7 +66,6 @@ public final class ModMsg {
         }
     }
 
-    /** Reads the language file by exact path; do not enumerate the directory (unreliable on NeoForge). */
     private static Map<String, String> load(String lang) {
         String path = "/assets/" + MOD_ID + "/lang/" + lang + ".json";
         try (InputStream in = ModMsg.class.getResourceAsStream(path)) {
@@ -94,7 +85,6 @@ public final class ModMsg {
         }
     }
 
-    /** Strips legacy § colour codes: fallback text goes to chat verbatim and codes would show as garbage. */
     private static String stripLegacyColor(String value) {
         if (value.indexOf('\u00A7') < 0) return value;
         StringBuilder sb = new StringBuilder(value.length());

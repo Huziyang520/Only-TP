@@ -7,10 +7,6 @@ import net.minecraft.client.gui.components.Renderable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-/**
- * Accessor exposing the protected Screen.addRenderableWidget.
- * Used to inject the pause button.
- */
 @Mixin(Screen.class)
 public interface ScreenAccessor {
 

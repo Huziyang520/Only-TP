@@ -10,7 +10,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 
-/** Fabric client entry: pause button and join notice. */
 public class OnlyTPClient implements ClientModInitializer {
 
     @Override
@@ -19,7 +18,6 @@ public class OnlyTPClient implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> onJoinWorld());
     }
 
-    /** Shows a notice once when this machine has no config screen (Cloth Config API missing). */
     private static void onJoinWorld() {
         if (ConfigScreens.available(Constants.MOD_ID)) {
             return;

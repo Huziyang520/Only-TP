@@ -1,7 +1,7 @@
 pluginManagement {
     repositories {
         maven {
-            // 阿里云镜像：Gradle 插件门户
+
             name = 'Aliyun Gradle Plugin Portal'
             url = 'https://maven.aliyun.com/repository/gradle-plugin'
         }
@@ -34,8 +34,6 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
-// 26.X 线的一个 target。common / fabric / neoforge 三个模块在仓库根，由所有 target 共享，
-// 这里只做指向；每个 target 只声明自己的版本区间、依赖版本与可选源码覆盖。
 rootProject.name = 'OnlyTP-26.1-26.2'
 includeBuild('../../build-logic')
 include 'common'

@@ -14,9 +14,6 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-/**
- * NeoForge client: pause button opening the AvalonBase screen (absent without it).
- */
 public class GuiEventHandler {
 
     private static final Identifier BUTTON_TEXTURE =

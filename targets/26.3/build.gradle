@@ -1,5 +1,5 @@
 plugins {
-    // 26.X 线：Loom 1.17.x（需 Gradle 9.4+）、ModDevGradle 2.0.x
+
     id 'net.fabricmc.fabric-loom' version '1.17.21' apply false
     id 'net.neoforged.moddev' version '2.0.147' apply false
 }

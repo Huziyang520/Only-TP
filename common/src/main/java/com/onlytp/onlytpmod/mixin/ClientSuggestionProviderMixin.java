@@ -8,11 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Client: merges the selector permission into the set used for local parsing and suggestions.
- * <p>Local parsing uses {@code ClientSuggestionProvider#permissions()}, which lacks
- * {@code commands/entity_selectors}, so {@code /tp @e[...] @s} fails locally
- */
 @Mixin(ClientSuggestionProvider.class)
 public class ClientSuggestionProviderMixin {
 

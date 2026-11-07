@@ -8,23 +8,14 @@ dependencies {
     implementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
-    // Mod Menu API: compile-time only so the mod list can show our config button.
-    // Loom 1.17 artifact-transform mode has no mod* configurations; plain
-    // compileOnly artifacts are remapped automatically and never bundled.
     compileOnly("com.terraformersmc:modmenu:20.0.1")
 
-    // AvalonBase 前置支持库：运行时作为 mod 依赖
-    // 固定文件名：build/libs 永久保留各旧版 jar（铁律不删），通配会把多个版本同时放进 classpath；
-    // AvalonBase 升版时必须同步修改此处文件名。
     implementation fileTree(project.file("../../../AvalonBase/26.3/fabric/build/libs")) {
         include "avalonbase-fabric-26.3-1.5.1.jar"
         exclude "*-sources.jar"
         exclude "*-javadoc.jar"
     }
 
-    // nightconfig（TOML）：已由内置前置库 Camelot 打包，本模组不再重复引入
-    // 内置前置库 Camelot：编译 + 运行时（随 jar 打包，玩家零安装）。
-    // Loom 1.17 的 artifact-transform 模式下没有 mod* 配置，普通 implementation 会自动 remap。
     implementation "com.camelot:camelot-fabric-${mc_range_label}:${camelot_version}"
     include "com.camelot:camelot-fabric-${mc_range_label}:${camelot_version}"
 }
