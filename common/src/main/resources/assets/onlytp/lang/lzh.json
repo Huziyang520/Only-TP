@@ -31,5 +31,6 @@
   "gui.onlytp.scope.client": "客戶端",
   "gui.onlytp.show_tips": "顯示提示",
   "gui.onlytp.command_whitelist": "OP 指令白名單",
-  "gui.onlytp.mode_label": "擇法："
+  "gui.onlytp.mode_label": "擇法：",
+  "gui.onlytp.hint.local_only": "若汝無權改伺服之設，所改者為本機之設。"
 }

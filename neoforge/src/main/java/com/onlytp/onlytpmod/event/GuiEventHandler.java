@@ -1,6 +1,7 @@
 package com.onlytp.onlytpmod.event;
 
 import com.camelot.ui.ConfigScreens;
+import com.camelot.ui.Screens;
 import com.onlytp.onlytpmod.Constants;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import net.minecraft.client.Minecraft;
@@ -43,7 +44,7 @@ public class GuiEventHandler {
                 btn -> {
                     var screen = ConfigScreens.create(Constants.MOD_ID, null);
                     if (screen != null) {
-                        Minecraft.getInstance().setScreenAndShow(screen);
+                        Screens.open(screen);
                     }
                 },
                 btn -> Component.empty()

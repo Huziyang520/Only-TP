@@ -31,5 +31,6 @@
   "gui.onlytp.scope.client": "客戶端",
   "gui.onlytp.show_tips": "顯示提示",
   "gui.onlytp.command_whitelist": "OP 指令白名單",
-  "gui.onlytp.mode_label": "模式選擇："
+  "gui.onlytp.mode_label": "模式選擇：",
+  "gui.onlytp.hint.local_only": "若你沒有編輯伺服端配置的權限，你編輯的是本機的配置。"
 }

@@ -1,5 +1,7 @@
 package com.onlytp.onlytpmod.gui;
 
+import com.camelot.ui.Screens;
+
 import com.avalon.base.gui.anim.ScreenAnim;
 import com.avalon.base.gui.anim.ScreenAnimType;
 import com.avalon.base.gui.anim.ScrollAnim;
@@ -543,7 +545,7 @@ public class OnlyTPScreen extends Screen {
         if (closeDone) return;
         closeDone = true;
         if (parentScreen != null && minecraft != null) {
-            minecraft.setScreenAndShow(parentScreen);
+            Screens.open(parentScreen);
         } else {
             super.onClose();
         }

@@ -31,5 +31,6 @@
   "gui.onlytp.scope.client": "客户端",
   "gui.onlytp.show_tips": "显示提示",
   "gui.onlytp.command_whitelist": "OP 指令白名单",
-  "gui.onlytp.mode_label": "模式选择："
+  "gui.onlytp.mode_label": "模式选择：",
+  "gui.onlytp.hint.local_only": "若你没有编辑服务端配置的权限，你编辑的是本机的配置。"
 }

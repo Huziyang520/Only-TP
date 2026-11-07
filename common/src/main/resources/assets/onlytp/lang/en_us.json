@@ -31,5 +31,6 @@
   "gui.onlytp.scope.client": "Client",
   "gui.onlytp.show_tips": "Show tips",
   "gui.onlytp.command_whitelist": "OP command whitelist",
-  "gui.onlytp.mode_label": "Mode:"
+  "gui.onlytp.mode_label": "Mode:",
+  "gui.onlytp.hint.local_only": "Without permission to edit the server config, changes you make here only affect this game."
 }

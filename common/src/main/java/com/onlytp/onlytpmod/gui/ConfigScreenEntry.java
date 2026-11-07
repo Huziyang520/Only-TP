@@ -1,6 +1,7 @@
 package com.onlytp.onlytpmod.gui;
 
 import com.camelot.ui.ConfigScreens;
+import com.camelot.ui.Screens;
 import com.onlytp.onlytpmod.AvalonLink;
 import com.onlytp.onlytpmod.Constants;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
@@ -38,7 +39,7 @@ public final class ConfigScreenEntry {
     public static void openAvalonScreen() {
         Screen screen = avalonScreen(null);
         if (screen != null) {
-            Minecraft.getInstance().setScreenAndShow(screen);
+            Screens.open(screen);
         }
     }
 
