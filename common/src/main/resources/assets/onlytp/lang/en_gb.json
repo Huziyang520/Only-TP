@@ -26,5 +26,9 @@
   "message.onlytp.blocked_gamemode": "Game mode switching is disabled by admin!",
   "message.onlytp.selector_blocked": "Only TP: Target selectors are not allowed!",
   "message.onlytp.notice_config_ui": "Only TP: The visual config screen requires AvalonBase or Cloth Config API. This notice can be disabled in the config screen or the config file.",
-  "onlytp.feedback": "Backup feedback address"
+  "onlytp.feedback": "Backup feedback address",
+  "gui.onlytp.scope.common": "Common",
+  "gui.onlytp.scope.client": "Client",
+  "gui.onlytp.show_tips": "Show tips",
+  "gui.onlytp.command_whitelist": "OP command whitelist"
 }

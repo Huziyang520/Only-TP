@@ -1,7 +1,9 @@
 package com.onlytp.onlytpmod;
 
 import com.camelot.net.CamelotNet;
+import com.camelot.neoforge.NeoConfigs;
 import com.mojang.logging.LogUtils;
+import com.onlytp.onlytpmod.client.NeoForgeConfigScreens;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.event.CommandLogic;
 import com.onlytp.onlytpmod.event.CommandRegistrationLogic;
@@ -22,7 +24,7 @@ import org.slf4j.Logger;
  * NeoForge 入口。
  *
  * <p>不能用 {@code @Mod.EventBusSubscriber}：mod 构造阶段会强制加载事件类，进而解析其
- * 引用的 Avalon GUI 类型（未装 AvalonBase 时 {@code NoClassDefFoundError}）。
+ * 引用的客户端类型（未装 AvalonBase 时 {@code NoClassDefFoundError}）。
  * 26.x 已移除 Dist，客户端事件直接注册（服务端不会触发，无影响）。
  */
 @Mod(Constants.MOD_ID)
@@ -30,13 +32,12 @@ public class OnlyTPMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public OnlyTPMod(IEventBus modEventBus) {
-        OnlyTPConfig.init();
+        NeoConfigs.register(OnlyTPConfig.all());
         CamelotNet.register(OnlyTPConfig.CONFIG, OnlyTPMod::resendCommands);
 
         NeoForge.EVENT_BUS.register(this);
         GuiEventHandler.register();
-        // 模组列表 Config 按钮（原生 NeoForge 扩展点，Catalogue/Configured 同样认它）
-        com.onlytp.onlytpmod.client.NeoForgeConfigScreens.register();
+        NeoForgeConfigScreens.register();
 
         LOGGER.info("Only TP Mod loaded!");
     }

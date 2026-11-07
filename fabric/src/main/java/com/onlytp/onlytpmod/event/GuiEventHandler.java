@@ -32,7 +32,7 @@ public class GuiEventHandler {
             if (Minecraft.getInstance().player == null) return;
 
             // 本机是主机时按本机文件刷新，手改配置后无需重启即可反映到按钮
-            if (Minecraft.getInstance().hasSingleplayerServer()) OnlyTPConfig.CONFIG.reloadIfChanged();
+            if (Minecraft.getInstance().hasSingleplayerServer()) OnlyTPConfig.CONFIG.reload();
             if (!OnlyTPConfig.enableConfigEntry()) return;
 
             int btnSize = 20;

@@ -26,5 +26,9 @@
   "message.onlytp.blocked_gamemode": "司牧禁戲法之易！",
   "message.onlytp.selector_blocked": "Only TP：不許擇取標的！",
   "message.onlytp.notice_config_ui": "Only TP：可視之設置界面須裝AvalonBase或Cloth Config API；此告示可於設置界面或設置之卷中關之。",
-  "onlytp.feedback": "備用之奏報處"
+  "onlytp.feedback": "備用之奏報處",
+  "gui.onlytp.scope.common": "通用",
+  "gui.onlytp.scope.client": "客戶端",
+  "gui.onlytp.show_tips": "顯示提示",
+  "gui.onlytp.command_whitelist": "OP 指令白名單"
 }

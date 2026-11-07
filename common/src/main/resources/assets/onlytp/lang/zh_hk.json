@@ -26,5 +26,9 @@
   "message.onlytp.blocked_gamemode": "管理員禁止使用遊戲模式切換！",
   "message.onlytp.selector_blocked": "Only TP: 不允許使用目標選擇器！",
   "message.onlytp.notice_config_ui": "Only TP：視覺化設定介面需要安裝 AvalonBase 或者 Cloth Config API；此提示可在設定介面或者設定檔中關閉。",
-  "onlytp.feedback": "備用回饋地址"
+  "onlytp.feedback": "備用回饋地址",
+  "gui.onlytp.scope.common": "通用",
+  "gui.onlytp.scope.client": "客戶端",
+  "gui.onlytp.show_tips": "顯示提示",
+  "gui.onlytp.command_whitelist": "OP 指令白名單"
 }

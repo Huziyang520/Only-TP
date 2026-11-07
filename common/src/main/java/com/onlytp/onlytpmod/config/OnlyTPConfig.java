@@ -3,18 +3,16 @@ package com.onlytp.onlytpmod.config;
 import com.camelot.config.CamelotConfig;
 import com.camelot.config.ConfigOption;
 import com.camelot.config.ConfigSchema;
+import com.camelot.config.ConfigScope;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Only TP 配置。
+ * Only TP 配置：服务端判定项在 {@code onlytp-common.toml}，本机偏好项在 {@code onlytp-client.toml}。
  *
- * <p>字段、默认值与文件顺序全部由 {@link #SCHEMA} 声明；读写、热加载、服务端下发与
- * 配置界面都由 Camelot 按 schema 处理，本类只对外提供取值方法与业务判定。
- *
- * <p>顺序即默认文件顺序：功能项（模式 → 配置入口 → 各名单）→ 界面偏好 → 提示。
+ * <p>字段与默认值由 schema 声明，读写、界面与下发由 Camelot 处理，本类只提供取值与业务判定。
  */
 public final class OnlyTPConfig {
 
@@ -27,7 +25,8 @@ public final class OnlyTPConfig {
     private static final List<String> DEFAULT_OP_WHITELIST = List.of(
             "help", "me", "say", "tell", "msg", "w", "trigger", "list", "seed");
 
-    public static final ConfigSchema SCHEMA = new ConfigSchema("onlytp", "onlytp.toml", "gui.onlytp.title",
+    public static final ConfigSchema COMMON_SCHEMA = new ConfigSchema("onlytp", ConfigScope.COMMON,
+            "gui.onlytp.title",
             List.of(
                     ConfigOption.select("mode", MODE_DISABLED,
                             MODE_ALLOW_TP, MODE_BLOCK_NON_TP, MODE_BOTH, MODE_DISABLED),
@@ -36,20 +35,26 @@ public final class OnlyTPConfig {
                     ConfigOption.list("mode_allow_tp_only", List.of()),
                     ConfigOption.list("mode_block_non_tp", List.of()),
                     ConfigOption.list("command_whitelist", DEFAULT_OP_WHITELIST)
-                            .hidden()
-                            .comment("Example: add \"kill\" below to let OP use /kill."),
+                            .comment("Example: add \"kill\" below to let OP use /kill.")));
+
+    public static final ConfigSchema CLIENT_SCHEMA = new ConfigSchema("onlytp", ConfigScope.CLIENT,
+            "gui.onlytp.title",
+            List.of(
                     ConfigOption.switchInt("gui_button_style", 0),
                     ConfigOption.bool("enable_animations", true),
-                    ConfigOption.switchInt("show_tips", 1).clientOnly()));
+                    ConfigOption.switchInt("show_tips", 1)));
 
-    public static final CamelotConfig CONFIG = new CamelotConfig(SCHEMA);
+    /** 服务端下发、全局生效的配置。 */
+    public static final CamelotConfig CONFIG = new CamelotConfig(COMMON_SCHEMA);
+
+    /** 只影响本机的配置，不参与同步。 */
+    public static final CamelotConfig CLIENT = new CamelotConfig(CLIENT_SCHEMA);
 
     private OnlyTPConfig() {
     }
 
-    /** 服务端与客户端各读一次本地文件；联机客户端之后以服务端下发的值为准。 */
-    public static void init() {
-        CONFIG.load();
+    public static CamelotConfig[] all() {
+        return new CamelotConfig[]{CONFIG, CLIENT};
     }
 
     // ─── 取值 ───
@@ -68,11 +73,11 @@ public final class OnlyTPConfig {
     }
 
     public static boolean enableAnimations() {
-        return CONFIG.getBool("enable_animations");
+        return CLIENT.getBool("enable_animations");
     }
 
     public static int guiButtonStyle() {
-        return CONFIG.getInt("gui_button_style");
+        return CLIENT.getInt("gui_button_style");
     }
 
     public static List<String> blacklistAllowTp() {
@@ -132,10 +137,12 @@ public final class OnlyTPConfig {
         CONFIG.set("mode", newMode);
         CONFIG.set("allow_entity_selectors", selectors);
         CONFIG.set("enable_config_entry", entry);
-        CONFIG.set("enable_animations", animations);
-        CONFIG.set("gui_button_style", buttonStyle);
         CONFIG.set("mode_allow_tp_only", new ArrayList<>(allowTp));
         CONFIG.set("mode_block_non_tp", new ArrayList<>(blockNonTp));
         CONFIG.save();
+
+        CLIENT.set("enable_animations", animations);
+        CLIENT.set("gui_button_style", buttonStyle);
+        CLIENT.save();
     }
 }

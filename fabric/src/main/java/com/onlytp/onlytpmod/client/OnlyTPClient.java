@@ -2,7 +2,8 @@ package com.onlytp.onlytpmod.client;
 
 import com.camelot.notice.JoinNotice;
 import com.camelot.ui.ConfigScreens;
-import com.onlytp.onlytpmod.AvalonLink;
+import com.mojang.logging.LogUtils;
+import com.onlytp.onlytpmod.Constants;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.event.GuiEventHandler;
 import net.fabricmc.api.ClientModInitializer;
@@ -18,12 +19,12 @@ public class OnlyTPClient implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> onJoinWorld());
     }
 
-    /** 既没有 AvalonBase 也没有 Cloth 时提示玩家：可视化配置界面不可用。 */
+    /** 本机没有任何配置界面（未装 Cloth Config API）时提示一次。 */
     private static void onJoinWorld() {
-        if (AvalonLink.isAvalonLoaded() || ConfigScreens.clothAvailable()) {
+        if (ConfigScreens.available(Constants.MOD_ID)) {
             return;
         }
-        JoinNotice.show(Minecraft.getInstance().player, OnlyTPConfig.CONFIG, "show_tips",
+        JoinNotice.show(Minecraft.getInstance().player, OnlyTPConfig.CLIENT, "show_tips",
                 "message.onlytp.notice_config_ui");
     }
 }
