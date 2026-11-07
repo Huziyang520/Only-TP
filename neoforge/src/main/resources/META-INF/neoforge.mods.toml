@@ -40,3 +40,10 @@ type = "optional"
 versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
+[[dependencies.${mod_id}]]
+# Cloth Config API：可视化配置界面的可选软依赖（未装时回退到 AvalonBase 界面）
+modId = "cloth-config"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "CLIENT"

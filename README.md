@@ -28,10 +28,12 @@
 
 ## The in-game editor
 
-- Open it from the **pause menu** (the mod's edit button) or from the **mod list** → *Only TP* → *Config*.
-- The visual editor needs the optional library **AvalonBase** on the client, plus operator permission on the server. Without AvalonBase the mod still works — you just edit the config file by hand.
+- Open it from the **mod list** → *Only TP* → *Config*, or from the **pause menu** (that button exists only with **AvalonBase** installed).
+- The mod-list screen is generated from the config schema and needs **Cloth Config API** on the client; with **AvalonBase** installed, the pause-menu button opens AvalonBase's own editor. Without either library the mod still works — you just edit the config file by hand.
+  - Cloth Config API: <https://www.curseforge.com/minecraft/mc-mods/cloth-config>
   - AvalonBase: <https://www.curseforge.com/minecraft/mc-mods/avalonbase>
-- *Interface* options: **Show pause button**, **Vanilla-style textures** and **Enable interface animations** (all on by default).
+- Editing needs operator permission on the server; without it the screen is read-only. If the server owner turned the edit entry off, the mod-list entry shows a short "entry closed" notice and the pause button is gone.
+- *Interface* options: **Enable config entry**, **Vanilla-style textures** and **Enable interface animations** (all on by default).
 
 ## Config file
 
@@ -40,7 +42,7 @@
 | Key | Meaning |
 |---|---|
 | `mode` | `disabled` / `allow_tp_only` / `block_non_tp` / `both` |
-| `show_pause_button` | Show the edit button in the pause menu |
+| `enable_config_entry` | Allow entering the visual config screen (also shows the pause button when AvalonBase is installed) |
 | `enable_animations` | Interface open/close animations |
 | `gui_button_style` | `0` = modern look, `1` = vanilla-style buttons |
 | `[mode_allow_tp_only]` / `[mode_block_non_tp]` | Exemption lists of that mode |
@@ -96,10 +98,12 @@ MIT — author: Huziyang520
 
 ## 游戏内编辑界面
 
-- 从**暂停菜单**的编辑按钮进入，或从**模组列表** → *Only TP* → *配置* 进入。
-- 可视化编辑界面需要客户端安装可选前置库 **AvalonBase**，并且在服务端拥有管理员权限；不装 AvalonBase 也能正常使用，只是只能手改配置文件。
+- 从**模组列表** → *Only TP* → *配置* 进入，或从**暂停菜单**的编辑按钮进入（该按钮只在装了 **AvalonBase** 时出现）。
+- 模组列表里的界面由配置项自动生成，需要客户端安装 **Cloth Config API**；装了 **AvalonBase** 时，暂停菜单按钮打开的是 AvalonBase 自己的界面。两者都没装也能正常使用，只是只能手改配置文件。
+  - Cloth Config API 下载：<https://www.curseforge.com/minecraft/mc-mods/cloth-config>
   - AvalonBase 下载：<https://www.curseforge.com/minecraft/mc-mods/avalonbase>
-- 「界面设置」里有 **显示暂停按钮**、**原版风格纹理**、**启用动画效果** 三项（默认都开启）。
+- 编辑需要在服务端拥有管理员权限，否则界面只读；服主关闭编辑入口后，模组列表入口只显示一句"服务端关闭了可视化配置界面入口"，暂停菜单按钮也不再出现。
+- 「界面设置」里有 **启用配置入口**、**原版风格纹理**、**启用动画效果** 三项（默认都开启）。
 
 ## 配置文件
 
@@ -108,7 +112,7 @@ MIT — author: Huziyang520
 | 键 | 含义 |
 |---|---|
 | `mode` | `disabled` / `allow_tp_only` / `block_non_tp` / `both` |
-| `show_pause_button` | 是否显示暂停菜单里的编辑按钮 |
+| `enable_config_entry` | 是否允许进入可视化配置界面（装了 AvalonBase 时也决定暂停菜单按钮） |
 | `enable_animations` | 是否启用界面开/关动画 |
 | `gui_button_style` | `0` = 现代风格，`1` = 原版风格按钮 |
 | `[mode_allow_tp_only]` / `[mode_block_non_tp]` | 对应模式的豁免玩家名单 |

@@ -1,9 +1,11 @@
 package com.onlytp.onlytpmod.event;
 
+import com.camelot.notice.JoinNotice;
+import com.camelot.ui.ConfigScreens;
 import com.onlytp.onlytpmod.AvalonLink;
 import com.onlytp.onlytpmod.Constants;
-import com.onlytp.onlytpmod.client.ClientJoinNotice;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
+import com.onlytp.onlytpmod.gui.ConfigScreenEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -16,52 +18,43 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * NeoForge 客户端：在暂停界面注入 OnlyTP 设置按钮，打开可视化编辑界面。
+ * NeoForge 客户端：暂停界面按钮 + 进世界提示。
  *
- * <p>关键约束：本类字节码不得静态引用任何 Avalon 类（尤其 {@code OnlyTPScreen}）。
- * 创建 {@code OnlyTPScreen} 一律走反射（{@link #openOnlyTPScreen(Minecraft)}），
- * 所有 Avalon 联动点先经 {@link AvalonLink#isAvalonLoaded()} 守卫。
+ * <p>未安装 AvalonBase 时按钮不存在；界面类名一律在 {@link ConfigScreenEntry} 内反射创建，
+ * 本类不引用任何 Avalon 类型。
  */
 public class GuiEventHandler {
 
     private static final Identifier BUTTON_TEXTURE =
             Identifier.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/button.png");
 
-    /** 由主入口在构造期调用，将本类的事件处理注册到 NeoForge 事件总线。 */
     public static void register() {
         NeoForge.EVENT_BUS.addListener(GuiEventHandler::onClientPlayerLogin);
         NeoForge.EVENT_BUS.addListener(GuiEventHandler::onScreenInit);
     }
 
-    /**
-     * 客户端进入世界（本地玩家生成）时，若未安装 AvalonBase 则显示提示。
-     */
+    /** 既没有 AvalonBase 也没有 Cloth 时提示玩家：可视化配置界面不可用。 */
     public static void onClientPlayerLogin(ClientPlayerNetworkEvent.LoggingIn event) {
-        ClientJoinNotice.onJoinWorld();
+        if (AvalonLink.isAvalonLoaded() || ConfigScreens.clothAvailable()) {
+            return;
+        }
+        JoinNotice.show(Minecraft.getInstance().player, OnlyTPConfig.CONFIG, "show_tips",
+                "message.onlytp.notice_config_ui");
     }
 
     public static void onScreenInit(ScreenEvent.Init.Post event) {
         if (!(event.getScreen() instanceof PauseScreen)) return;
-
-        // 编辑界面为「与 AvalonBase 的联动增强」：未安装 AvalonBase 时不注入按钮
         if (!AvalonLink.isAvalonLoaded()) return;
+        if (Minecraft.getInstance().player == null) return;
 
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) return;
+        if (Minecraft.getInstance().hasSingleplayerServer()) OnlyTPConfig.CONFIG.reloadIfChanged();
+        if (!OnlyTPConfig.enableConfigEntry()) return;
 
-        // 热加载：本机是主机（单机 / 局域网房主）时按 config/onlytp.toml 刷新，
-        // 保证手改 show_pause_button 后无需重启即可反映到暂停页按钮；联机客户端走服务端 SYNC，不读本地文件
-        if (mc.hasSingleplayerServer()) OnlyTPConfig.reloadIfChanged();
-
-        if (!OnlyTPConfig.showPauseButton) return;
-
-        int screenWidth = event.getScreen().width;
         int btnSize = 20;
-        int x = screenWidth - btnSize - 5;
-        int y = 5;
+        int x = event.getScreen().width - btnSize - 5;
 
-        event.addListener(new Button(x, y, btnSize, btnSize, Component.empty(),
-                btn -> openOnlyTPScreen(mc),
+        event.addListener(new Button(x, 5, btnSize, btnSize, Component.empty(),
+                btn -> ConfigScreenEntry.openAvalonScreen(),
                 (btn) -> Component.empty()
         ) {
             @Override
@@ -72,18 +65,5 @@ public class GuiEventHandler {
                 graphics.blit(RenderPipelines.GUI_TEXTURED, BUTTON_TEXTURE, ox, oy, 0.0F, 0.0F, 16, 16, 16, 16);
             }
         });
-    }
-
-    /**
-     * 通过反射打开 {@code OnlyTPScreen}（继承 {@code AvalonConfigScreen}）。
-     * 仅应在 {@code AvalonLink.isAvalonLoaded()} 为 true 时调用。
-     */
-    private static void openOnlyTPScreen(Minecraft mc) {
-        try {
-            Class<?> screenClass = Class.forName("com.onlytp.onlytpmod.gui.OnlyTPScreen");
-            mc.setScreenAndShow((net.minecraft.client.gui.screens.Screen) screenClass.getConstructor().newInstance());
-        } catch (Exception e) {
-            Constants.LOG.error("[OnlyTP] Failed to open OnlyTPScreen via reflection", e);
-        }
     }
 }

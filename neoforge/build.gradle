@@ -46,7 +46,8 @@ dependencies {
         exclude "*-sources.jar"
         exclude "*-javadoc.jar"
     }
-    // nightconfig（TOML）：NeoForge 运行时自带，编译期显式声明以解析 common 的引用
-    compileOnly group: 'com.electronwill.night-config', name: 'core', version: '3.6.4'
-    compileOnly group: 'com.electronwill.night-config', name: 'toml', version: '3.6.4'
+    // nightconfig（TOML）：已由内置前置库 Camelot 提供，本模组不再声明
+    // 内置前置库 Camelot：编译期 + 随 jar 打包（Jar-in-Jar），玩家零安装
+    implementation "com.camelot:camelot-neoforge-${mc_range_label}:${camelot_version}"
+    jarJar "com.camelot:camelot-neoforge-${mc_range_label}:${camelot_version}"
 }

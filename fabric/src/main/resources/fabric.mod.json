@@ -37,6 +37,9 @@
     "suggests": {
         "avalonbase": ">=1.0.0"
     },
+    "recommends": {
+        "cloth-config": "*"
+    },
     "custom": {
         "catalogue": {
             "configFactory": "com.onlytp.onlytpmod.client.CatalogueConfigEntry"

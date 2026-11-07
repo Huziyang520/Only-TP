@@ -37,7 +37,7 @@ public final class ClientPermissionLogic {
      * （仅允许TP / 禁止非TP / 同时启用三种模式都算；全关闭模式放行）。
      */
     public static boolean shouldGrantEntitySelectors() {
-        if (!OnlyTPConfig.allowEntitySelectors) return false;
+        if (!OnlyTPConfig.allowEntitySelectors()) return false;
         if (OnlyTPConfig.isDisabled()) return false;
         return OnlyTPConfig.isAllowTpOnlyMode()
                 || OnlyTPConfig.isBlockNonTpMode()

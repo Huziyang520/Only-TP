@@ -69,10 +69,10 @@ public class CommandLogic {
         if (OnlyTPConfig.isBothMode()) {
             // 同时启用：黑名单分别应用
             boolean canceled = false;
-            if (!OnlyTPConfig.blacklistAllowTp.contains(playerName)) {
+            if (!OnlyTPConfig.blacklistAllowTp().contains(playerName)) {
                 canceled |= handleAllowTpOnly(player, raw, cmd, isOp);
             }
-            if (!OnlyTPConfig.blacklistBlockNonTp.contains(playerName)) {
+            if (!OnlyTPConfig.blacklistBlockNonTp().contains(playerName)) {
                 canceled |= handleBlockNonTp(player, raw, cmd, isOp);
             }
             return canceled;
@@ -109,7 +109,7 @@ public class CommandLogic {
      * @return true 表示已拦截（并已提示玩家）
      */
     private static boolean deniesEntitySelector(String raw, ServerPlayer player) {
-        if (OnlyTPConfig.allowEntitySelectors) return false;
+        if (OnlyTPConfig.allowEntitySelectors()) return false;
         if (raw == null || raw.indexOf('@') < 0) return false;
         player.sendSystemMessage(ModMsg.red(player, "message.onlytp.selector_blocked"), false);
         return true;

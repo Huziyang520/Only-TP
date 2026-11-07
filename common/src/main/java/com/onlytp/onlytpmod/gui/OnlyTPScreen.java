@@ -11,11 +11,8 @@ import com.avalon.base.gui.theme.ThemedRadio;
 import com.avalon.base.gui.theme.ThemedToggle;
 import com.avalon.base.gui.theme.VanillaTheme;
 import com.avalon.base.gui.util.MouseButtons;
-import com.onlytp.onlytpmod.AvalonLink;
+import com.camelot.net.CamelotNet;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
-import com.onlytp.onlytpmod.network.ConfigUpdatePacket;
-import com.avalon.base.network.AvalonNetwork;
-import com.onlytp.onlytpmod.network.NetworkChannels;
 import com.onlytp.onlytpmod.util.ModMsg;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -63,8 +60,6 @@ public class OnlyTPScreen extends Screen {
     private boolean canEdit;
     // Parent screen (mod list) to return to; null falls back to the default close behavior.
     private Screen parentScreen;
-    // Local-edit mode is opened from the main menu: edits write the local toml and never send packets.
-    private boolean localEdit;
     private int guiLeft, guiTop;
     private int blScroll;
     /** 名单列表滚动的平滑动画：{@link #blScroll} 仍是“目标值”，显示位置取 {@link ScrollAnim#displayValue()}。 */
@@ -96,24 +91,19 @@ public class OnlyTPScreen extends Screen {
 
     private static final String[] MODES = {"allow_tp_only", "block_non_tp", "both", "disabled"};
 
-    public OnlyTPScreen() {
-        this(null, false);
-    }
-
-    public OnlyTPScreen(Screen parent, boolean localEdit) {
+    public OnlyTPScreen(Screen parent) {
         super(Component.translatable("gui.onlytp.title"));
         this.parentScreen = parent;
-        this.localEdit = localEdit;
-        this.selectedMode = OnlyTPConfig.mode;
-        this.localShowPause = OnlyTPConfig.showPauseButton;
-        this.localUseVanilla = OnlyTPConfig.guiButtonStyle == 1;
+        this.selectedMode = OnlyTPConfig.mode();
+        this.localShowPause = OnlyTPConfig.enableConfigEntry();
+        this.localUseVanilla = OnlyTPConfig.guiButtonStyle() == 1;
         this.theme = localUseVanilla ? VANILLA_THEME : MODERN_THEME;
-        this.blacklistAllowTp.addAll(OnlyTPConfig.blacklistAllowTp);
-        this.blacklistBlockNonTp.addAll(OnlyTPConfig.blacklistBlockNonTp);
+        this.blacklistAllowTp.addAll(OnlyTPConfig.blacklistAllowTp());
+        this.blacklistBlockNonTp.addAll(OnlyTPConfig.blacklistBlockNonTp());
         // 开/关屏动画（「下落弹跳」进、「下滑」出）；只在构造时起跑一次，
         // 模式切换触发的 init() 重入不会重播开屏动画。
-        this.localEnableAnimations = OnlyTPConfig.enableAnimations;
-        this.localAllowSelectors = OnlyTPConfig.allowEntitySelectors;
+        this.localEnableAnimations = OnlyTPConfig.enableAnimations();
+        this.localAllowSelectors = OnlyTPConfig.allowEntitySelectors();
         applyAnimationConfig();
         anim.playOpen();
     }
@@ -141,8 +131,8 @@ public class OnlyTPScreen extends Screen {
         // 优先居中，但保证面板底边框（CONTENT_MAX_Y+14）留在屏幕内：小窗时上移，避免下边框跑出屏幕
         int relPanelBottom = CONTENT_MAX_Y + 14;
         guiTop = Math.min(Math.max(6, (height - GUI_HEIGHT) / 2), height - 6 - relPanelBottom);
-        canEdit = localEdit || (minecraft != null && minecraft.player != null
-                && minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER));
+        canEdit = minecraft == null || minecraft.player == null
+                || minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
         blScroll = Math.max(0, blScroll);
         blAnim.setTarget(blScroll);
 
@@ -151,15 +141,15 @@ public class OnlyTPScreen extends Screen {
         // 超宽标签按卡片宽截断（悬停出全文），保证四个选项一行一项、左右列都对齐。
         for (int i = 0; i < 4; i++) {
             modeRadios[i] = new ThemedRadio(guiLeft + 8 + 6, 28 + i * 12,
-                    Component.translatable("gui.onlytp.mode_" + MODES[i]),
+                    Component.translatable("gui.onlytp.mode." + MODES[i]),
                     MODES[i].equals(selectedMode), canEdit, 146 - 34);
         }
 
         // ─── 开关（同口径：卡片左缘 + 6；行距 12 与左列单选一一对齐：28 + i*12） ───
         showPauseToggle = new ThemedToggle(guiLeft + 154 + 6, 28,
-                Component.translatable("gui.onlytp.toggle_show_button"), localShowPause, canEdit, false, 138 - 34);
+                Component.translatable("gui.onlytp.enable_config_entry"), localShowPause, canEdit, false, 138 - 34);
         styleToggle = new ThemedToggle(guiLeft + 154 + 6, 40,
-                Component.translatable("gui.onlytp.toggle_vanilla_texture"), localUseVanilla, canEdit, false, 138 - 34);
+                Component.translatable("gui.onlytp.gui_button_style"), localUseVanilla, canEdit, false, 138 - 34);
         // 「设置」卡片第 3 行：界面动画开关（默认启用）
         animToggle = new ThemedToggle(guiLeft + 154 + 6, 52,
                 Component.translatable("gui.onlytp.enable_animations"), localEnableAnimations, canEdit, false, 138 - 34);
@@ -549,22 +539,10 @@ public class OnlyTPScreen extends Screen {
 
     private void saveConfig() {
         if (!canEdit) return;
-        // Local edits (opened from the main-menu mod list) only persist to the local toml.
-        if (!localEdit && AvalonLink.isAvalonLoaded()) {
-            AvalonNetwork.sendToServer(NetworkChannels.UPDATE, new ConfigUpdatePacket(
-                    selectedMode, localAllowSelectors, localShowPause, localEnableAnimations, localUseVanilla ? 1 : 0,
-                    blacklistAllowTp, blacklistBlockNonTp));
-        }
-        OnlyTPConfig.mode = selectedMode;
-        OnlyTPConfig.allowEntitySelectors = localAllowSelectors;
-        OnlyTPConfig.showPauseButton = localShowPause;
-        OnlyTPConfig.enableAnimations = localEnableAnimations;
-        OnlyTPConfig.guiButtonStyle = localUseVanilla ? 1 : 0;
-        OnlyTPConfig.blacklistAllowTp = new ArrayList<>(blacklistAllowTp);
-        OnlyTPConfig.blacklistBlockNonTp = new ArrayList<>(blacklistBlockNonTp);
-        if (localEdit) {
-            OnlyTPConfig.save();
-        }
+        OnlyTPConfig.applyAndSave(selectedMode, localAllowSelectors, localShowPause, localEnableAnimations,
+                localUseVanilla ? 1 : 0, blacklistAllowTp, blacklistBlockNonTp);
+        // 世界内：把改动推给服务端（单机即本机服务端）；主菜单外无连接时自动忽略
+        CamelotNet.sendUpdate(OnlyTPConfig.CONFIG);
         onClose();
     }
 
