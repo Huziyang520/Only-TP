@@ -27,5 +27,9 @@
   "message.onlytp.selector_blocked": "Only TP: ¡No se permiten selectores de objetivo!",
   "message.onlytp.notice_config_ui": "Only TP: La pantalla de configuración visual requiere AvalonBase o Cloth Config API. Este aviso puede desactivarse en la pantalla de configuración o en el archivo de configuración.",
   "onlytp.feedback": "Dirección de comentarios alternativa",
-  "gui.onlytp.mode_label": "Modo:"
+  "gui.onlytp.mode_label": "Modo:",
+  "onlytp.configuration.section.onlytp.common.toml": "Common settings",
+  "onlytp.configuration.section.onlytp.common.toml.title": "Common settings",
+  "onlytp.configuration.section.onlytp.client.toml": "Client settings",
+  "onlytp.configuration.section.onlytp.client.toml.title": "Client settings"
 }

@@ -1,9 +1,9 @@
 package com.onlytp.onlytpmod.event;
 
-import com.camelot.ui.ConfigScreens;
-import com.camelot.ui.Screens;
+import com.onlytp.onlytpmod.AvalonLink;
 import com.onlytp.onlytpmod.Constants;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
+import com.onlytp.onlytpmod.gui.ConfigScreenEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * NeoForge 客户端：暂停界面按钮，打开 NeoForge 自带的配置界面。
+ * NeoForge 客户端：暂停界面注入 AvalonBase 界面入口（未装则无按钮）。
  */
 public class GuiEventHandler {
 
@@ -30,6 +30,9 @@ public class GuiEventHandler {
         if (!(event.getScreen() instanceof PauseScreen)) {
             return;
         }
+        if (!AvalonLink.isAvalonLoaded()) {
+            return;
+        }
         if (Minecraft.getInstance().player == null) {
             return;
         }
@@ -41,12 +44,7 @@ public class GuiEventHandler {
         int x = event.getScreen().width - btnSize - 5;
 
         event.addListener(new Button(x, 5, btnSize, btnSize, Component.empty(),
-                btn -> {
-                    var screen = ConfigScreens.create(Constants.MOD_ID, null);
-                    if (screen != null) {
-                        Screens.open(screen);
-                    }
-                },
+                btn -> ConfigScreenEntry.openAvalonScreen(),
                 btn -> Component.empty()
         ) {
             @Override

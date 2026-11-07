@@ -32,5 +32,8 @@
   "gui.onlytp.show_tips": "Show tips",
   "gui.onlytp.command_whitelist": "OP command whitelist",
   "gui.onlytp.mode_label": "Mode:",
-  "gui.onlytp.hint.local_only": "Without permission to edit the server config, changes you make here only affect this game."
+  "onlytp.configuration.section.onlytp.common.toml": "Common settings",
+  "onlytp.configuration.section.onlytp.common.toml.title": "Common settings",
+  "onlytp.configuration.section.onlytp.client.toml": "Client settings",
+  "onlytp.configuration.section.onlytp.client.toml.title": "Client settings"
 }

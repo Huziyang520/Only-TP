@@ -32,5 +32,8 @@
   "gui.onlytp.show_tips": "顯示提示",
   "gui.onlytp.command_whitelist": "OP 指令白名單",
   "gui.onlytp.mode_label": "擇法：",
-  "gui.onlytp.hint.local_only": "若汝無權改伺服之設，所改者為本機之設。"
+  "onlytp.configuration.section.onlytp.common.toml": "通用之設",
+  "onlytp.configuration.section.onlytp.common.toml.title": "通用之設",
+  "onlytp.configuration.section.onlytp.client.toml": "本機之設",
+  "onlytp.configuration.section.onlytp.client.toml.title": "本機之設"
 }

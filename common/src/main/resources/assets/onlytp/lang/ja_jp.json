@@ -27,5 +27,9 @@
   "message.onlytp.selector_blocked": "Only TP: ターゲットセレクターは使用できません！",
   "message.onlytp.notice_config_ui": "Only TP：視覚的な設定画面には AvalonBase または Cloth Config API が必要です。この通知は設定画面または設定ファイルで無効にできます。",
   "onlytp.feedback": "予備のフィードバック先",
-  "gui.onlytp.mode_label": "モード："
+  "gui.onlytp.mode_label": "モード：",
+  "onlytp.configuration.section.onlytp.common.toml": "Common settings",
+  "onlytp.configuration.section.onlytp.common.toml.title": "Common settings",
+  "onlytp.configuration.section.onlytp.client.toml": "Client settings",
+  "onlytp.configuration.section.onlytp.client.toml.title": "Client settings"
 }

@@ -1,5 +1,6 @@
 package com.onlytp.onlytpmod;
 
+import com.camelot.config.ConfigEnums;
 import com.camelot.net.CamelotNet;
 import com.camelot.neoforge.NeoConfigs;
 import com.mojang.logging.LogUtils;
@@ -30,6 +31,7 @@ public class OnlyTPMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public OnlyTPMod(IEventBus modEventBus) {
+        ConfigEnums.register(Constants.MOD_ID, "mode", com.onlytp.onlytpmod.config.NeoMode.class);
         NeoConfigs.register(OnlyTPConfig.all());
         CamelotNet.register(OnlyTPConfig.CONFIG, OnlyTPMod::resendCommands);
 

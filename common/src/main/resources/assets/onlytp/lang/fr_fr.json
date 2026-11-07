@@ -27,5 +27,9 @@
   "message.onlytp.selector_blocked": "Only TP: Les sélecteurs de cible ne sont pas autorisés !",
   "message.onlytp.notice_config_ui": "Only TP : L'écran de configuration visuel nécessite AvalonBase ou Cloth Config API. Cet avis peut être désactivé dans l'écran de configuration ou le fichier de configuration.",
   "onlytp.feedback": "Adresse de retour alternative",
-  "gui.onlytp.mode_label": "Mode :"
+  "gui.onlytp.mode_label": "Mode :",
+  "onlytp.configuration.section.onlytp.common.toml": "Common settings",
+  "onlytp.configuration.section.onlytp.common.toml.title": "Common settings",
+  "onlytp.configuration.section.onlytp.client.toml": "Client settings",
+  "onlytp.configuration.section.onlytp.client.toml.title": "Client settings"
 }
