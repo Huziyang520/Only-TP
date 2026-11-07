@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 /**
- * 访问器：暴露 Screen.addRenderableWidget（protected）供外部调用。
- * 用于在暂停界面注入按钮。
+ * Accessor exposing the protected Screen.addRenderableWidget.
+ * Used to inject the pause button.
  */
 @Mixin(Screen.class)
 public interface ScreenAccessor {

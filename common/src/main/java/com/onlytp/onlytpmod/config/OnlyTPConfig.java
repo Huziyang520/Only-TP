@@ -10,12 +10,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Only TP 配置：服务端判定项在 {@code onlytp-common.toml}，本机偏好项在 {@code onlytp-client.toml}。
- * <p>字段与默认值由 schema 声明，读写、界面与下发由 Camelot 处理，本类只提供取值与业务判定。
+ * Only TP config: server rules in {@code onlytp-common.toml}, local preferences in {@code onlytp-client.toml}.
+ * <p>The schema declares keys and defaults; Camelot handles IO, screens and syncing.
  */
 public final class OnlyTPConfig {
 
-    /** 生效模式；常量名即配置文件里写的值，NeoForge 界面据此渲染成点击切换按钮。 */
+    /** Active mode; constants are the values written to the file and the labels of the cycle button. */
     public enum Mode {
         allow_tp_only,
         block_non_tp,
@@ -28,7 +28,7 @@ public final class OnlyTPConfig {
     public static final String MODE_BOTH = "both";
     public static final String MODE_DISABLED = "disabled";
 
-    /** 原版无需作弊即可使用的基础指令，作为 OP 命令白名单的默认值。 */
+    /** Vanilla commands that need no cheats, used as the default operator whitelist. */
     private static final List<String> DEFAULT_OP_WHITELIST = List.of(
             "help", "me", "say", "tell", "msg", "w", "trigger", "list", "seed");
 
@@ -50,10 +50,10 @@ public final class OnlyTPConfig {
                     ConfigOption.bool("enable_animations", true),
                     ConfigOption.switchInt("show_tips", 1)));
 
-    /** 服务端下发、全局生效的配置。 */
+    /** Synced, server-wide config. */
     public static final CamelotConfig CONFIG = new CamelotConfig(COMMON_SCHEMA);
 
-    /** 只影响本机的配置，不参与同步。 */
+    /** Local-only config, never synced. */
     public static final CamelotConfig CLIENT = new CamelotConfig(CLIENT_SCHEMA);
 
     private OnlyTPConfig() {
@@ -63,7 +63,7 @@ public final class OnlyTPConfig {
         return new CamelotConfig[]{CONFIG, CLIENT};
     }
 
-    // ─── 取值 ───
+    // values
 
     public static String mode() {
         return CONFIG.getString("mode");
@@ -73,7 +73,7 @@ public final class OnlyTPConfig {
         return CONFIG.getBool("allow_entity_selectors");
     }
 
-    /** 配置入口开关：关闭后暂停界面无按钮，世界内进入入口显示"服务端已关闭"。 */
+    /** Config entry switch: when off the pause button disappears and the entry shows a closed notice. */
     public static boolean enableConfigEntry() {
         return CONFIG.getBool("enable_config_entry");
     }
@@ -98,7 +98,7 @@ public final class OnlyTPConfig {
         return CONFIG.getList("command_whitelist");
     }
 
-    // ─── 业务判定 ───
+    // rules
 
     public static List<String> currentBlacklist() {
         return switch (mode()) {
@@ -116,7 +116,7 @@ public final class OnlyTPConfig {
         return "tp".equals(commandName) || "teleport".equals(commandName);
     }
 
-    /** 命中 OP 命令白名单；仅由 block_non_tp 模式的 OP 玩家放行使用。 */
+    /** Hit by the operator command whitelist; only unblocks operators in block_non_tp mode. */
     public static boolean isWhitelistedForOp(String commandName) {
         return commandName != null && commandWhitelistOp().contains(commandName);
     }
@@ -137,7 +137,7 @@ public final class OnlyTPConfig {
         return MODE_BOTH.equals(mode());
     }
 
-    /** 界面保存后写回：立即生效并落盘（联机客户端随后由服务端下发覆盖）。 */
+    /** Written back by the screen: applies immediately and persists (a server may override it later). */
     public static void applyAndSave(String newMode, boolean selectors, boolean entry, boolean animations,
                                     int buttonStyle, List<String> allowTp, List<String> blockNonTp) {
         CONFIG.set("mode", newMode);

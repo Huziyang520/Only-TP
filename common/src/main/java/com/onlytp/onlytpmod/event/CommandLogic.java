@@ -9,14 +9,14 @@ import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.server.permissions.Permissions;
 
 /**
- * <p>提供两个等价入口：
- * 两者共享同一套判定逻辑。
+ * <p>Two equivalent entry points:
+ * both share one decision path.
  */
 public class CommandLogic {
 
     /**
      * /**
-     * Forge 侧入口：已有解析结果。
+     * Forge entry: results are already parsed.
      */
     public static boolean shouldCancel(ParseResults<CommandSourceStack> parseResults) {
         if (OnlyTPConfig.isDisabled()) return false;
@@ -28,7 +28,7 @@ public class CommandLogic {
 
     /**
      * /**
-     * Fabric mixin 侧入口：只有命令源与命令字符串，自行解析命令名。
+     * Fabric mixin entry: only a source and a command string, so the name is parsed here.
      */
     public static boolean shouldCancel(CommandSourceStack source, String raw) {
         if (OnlyTPConfig.isDisabled()) return false;
@@ -38,7 +38,7 @@ public class CommandLogic {
 
     /**
      * /**
-     * 从 ParseResults 提取命令名（优先用已解析节点，解析失败则退回原始字符串）。
+     * Extracts the command name from ParseResults (parsed node first, raw string as fallback).
      */
     private static String resolveCommandName(ParseResults<CommandSourceStack> parse, String raw) {
         if (!parse.getContext().getNodes().isEmpty()) {
@@ -49,7 +49,7 @@ public class CommandLogic {
 
     /**
      * /**
-     * 从原始命令字符串提取第一个词作为命令名（去掉可选的前导 '/'）。
+     * Extracts the first word of a raw command string, dropping a leading slash.
      */
     private static String resolveCommandNameFromRaw(String raw) {
         if (raw == null || raw.isEmpty()) return "";
@@ -65,7 +65,7 @@ public class CommandLogic {
         boolean isOp = source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
 
         if (OnlyTPConfig.isBothMode()) {
-            // 同时启用：黑名单分别应用
+            // Both modes enabled: each blacklist applies separately
             boolean canceled = false;
             if (!OnlyTPConfig.blacklistAllowTp().contains(playerName)) {
                 canceled |= handleAllowTpOnly(player, raw, cmd, isOp);
@@ -75,7 +75,7 @@ public class CommandLogic {
             }
             return canceled;
         } else {
-            // 黑名单：完全豁免
+            // Blacklist: fully exempt
             if (OnlyTPConfig.isBlacklisted(playerName)) return false;
 
             if (OnlyTPConfig.isAllowTpOnlyMode()) {
@@ -89,7 +89,7 @@ public class CommandLogic {
 
     private static boolean handleAllowTpOnly(ServerPlayer player, String raw, String cmd, boolean isOp) {
         if (isOp) return false; // OP 不限制
-        // 非OP → 仅提权执行 TP 命令，其余命令保持原版行为（可用则用，不可用则显示"未知或不完整的命令"）
+        // Non-operator: teleport commands are elevated, everything else stays vanilla
         if (OnlyTPConfig.isTpCommand(cmd)) {
             if (deniesEntitySelector(raw, player)) return true;
             executeElevated(player, raw);
@@ -100,7 +100,7 @@ public class CommandLogic {
 
     /**
      * /**
-     * 目标选择器开关关闭时，拒绝**含选择器**的提权指令。
+     * Blocks elevated commands that use a target selector while the selector switch is off.
      */
     private static boolean deniesEntitySelector(String raw, ServerPlayer player) {
         if (OnlyTPConfig.allowEntitySelectors()) return false;
@@ -116,11 +116,11 @@ public class CommandLogic {
             executeElevated(player, raw);
             return true;
         }
-        // OP 命中命令白名单 → 放行（可用则用），其余命令仍拦截
+        // Operator hit by the command whitelist is unblocked; other commands stay blocked
         if (isOp && OnlyTPConfig.isWhitelistedForOp(cmd)) {
             return false;
         }
-        // gamemode/g 命令被禁时，提示游戏模式切换被禁（而非通用的指令禁止提示）
+        // A blocked gamemode command answers with the gamemode message instead of the generic one
         if ("gamemode".equals(cmd) || "g".equals(cmd)) {
             player.sendSystemMessage(ModMsg.red(player, "message.onlytp.blocked_gamemode"), false);
             return true;

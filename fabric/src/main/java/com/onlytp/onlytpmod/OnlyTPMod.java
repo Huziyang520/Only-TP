@@ -12,9 +12,9 @@ import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 
 /**
- * Fabric 入口。
- * <p>命令执行拦截与游戏模式切换拦截由 mixin 完成（见 mixin 包）；配置读写、界面、
- * 服务端下发与热加载由 Camelot 处理，这里只登记本模组的配置与"配置变化后重发命令树"。
+ * Fabric entry point.
+ * <p>Command and game mode blocking lives in the mixin package; config IO, screens,
+ * syncing and hot reload belong to Camelot, so this class only registers configs and resends the command tree.
  */
 public class OnlyTPMod implements ModInitializer {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -30,7 +30,7 @@ public class OnlyTPMod implements ModInitializer {
         LOGGER.info("Only TP Mod loaded!");
     }
 
-    /** 配置变化后重发命令树，客户端补全随之更新。 */
+    /** Resends the command tree after a config change so client suggestions follow. */
     private static void resendCommands(MinecraftServer server) {
         if (server == null) {
             return;

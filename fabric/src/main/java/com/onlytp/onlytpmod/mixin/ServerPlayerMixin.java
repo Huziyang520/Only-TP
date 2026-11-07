@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Fabric 游戏模式切换拦截（等价于原 Forge PlayerChangeGameModeEvent）。
- * 在 setGameMode 时捕获旧模式，若应拦截则取消本次切换（模式保持旧值，等价于原版回滚）。
- * <p>注意：setGameMode 存在多个重载（ServerPlayer 的返回 boolean，Player 的返回 void），
+ * Fabric game mode blocking (equivalent to Forge's PlayerChangeGameModeEvent).
+ * Captures the old mode in setGameMode and cancels the change, leaving the old value in place.
+ * <p>Note: setGameMode has several overloads (ServerPlayer returns boolean, Player returns void),
  */
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {

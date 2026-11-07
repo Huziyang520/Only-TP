@@ -8,9 +8,9 @@ import java.lang.reflect.Field;
 import java.util.function.Predicate;
 
 /**
- * 注册命令后修改 tp/teleport 节点的 requirement，使非 OP 玩家也能看到并补全 TP 命令。
- * 使用反射而非 Mixin Accessor，避免 LiteralCommandNode 转型失败。
- * <p>由平台侧（Forge RegisterCommandsEvent / Fabric CommandRegistrationCallback）调用
+ * After command registration, relaxes the requirement of tp/teleport so non-operators can see and complete them.
+ * Uses reflection instead of a Mixin accessor to avoid a LiteralCommandNode cast failure.
+ * <p>Called by the platform layer (Forge RegisterCommandsEvent / Fabric CommandRegistrationCallback)
  */
 public class CommandRegistrationLogic {
 
@@ -35,10 +35,10 @@ public class CommandRegistrationLogic {
         if (node == null) return;
         try {
             Predicate<CommandSourceStack> original = node.getRequirement();
-            // 动态读取当前模式，保证游戏内切换配置后立即生效
+            // Reads the mode dynamically so in-game config changes apply immediately
             REQUIREMENT_FIELD.set(node, (Predicate<CommandSourceStack>) src -> {
-                // 功能1（非OP仅允许TP）与功能3（同时启用）下：
-                // 非OP玩家也需要看到并补全 TP 命令
+                // For the non-operator teleport mode and the both mode:
+                // non-operators must also see and complete teleport commands
                 if (OnlyTPConfig.isAllowTpOnlyMode() || OnlyTPConfig.isBothMode()) {
                     return true;
                 }

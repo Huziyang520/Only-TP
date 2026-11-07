@@ -12,9 +12,9 @@ import net.minecraft.network.chat.Component;
 import java.lang.reflect.Constructor;
 
 /**
- * 模组列表的「配置」按钮入口。
- * <p>具体界面由平台决定：NeoForge 用自带的 ConfigurationScreen，Fabric 用 Cloth 生成的界面。
- * 两者都没有时返回 {@code null}，按钮置灰——不会退到暂停界面按钮所用的 AvalonBase 界面。
+ * Config button entry of the mod list.
+ * <p>The platform decides the screen: NeoForge's own ConfigurationScreen, or a Cloth screen on Fabric.
+ * Returns {@code null} when neither exists, so the button is disabled rather than falling back anywhere.
  */
 public final class ConfigScreenEntry {
 
@@ -23,7 +23,7 @@ public final class ConfigScreenEntry {
     private ConfigScreenEntry() {
     }
 
-    /** 模组列表入口：世界内且服务端关闭入口时给二级提示，否则交给平台的配置界面。 */
+    /** Mod list entry: a closed notice inside a world, otherwise the platform screen. */
     public static Screen create(Screen parent) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && !OnlyTPConfig.enableConfigEntry()) {
@@ -35,7 +35,7 @@ public final class ConfigScreenEntry {
         return ConfigScreens.create(Constants.MOD_ID, parent);
     }
 
-    /** 暂停界面按钮：AvalonBase 界面的唯一入口。未装 AvalonBase 时什么也不做。 */
+    /** Pause button: the only entry to the AvalonBase screen; does nothing without AvalonBase. */
     public static void openAvalonScreen() {
         Screen screen = avalonScreen(null);
         if (screen != null) {

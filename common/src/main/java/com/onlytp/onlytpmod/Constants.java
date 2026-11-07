@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 模组全局常量。
- * mod_id 与原版 Forge 项目保持一致（onlytp），不得修改。
+ * Mod-wide constants.
+ * mod_id matches the original Forge project (onlytp); do not change.
  */
 public class Constants {
 

@@ -22,9 +22,9 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.slf4j.Logger;
 
 /**
- * NeoForge 入口。
- * <p>不能用 {@code @Mod.EventBusSubscriber}：mod 构造阶段会强制加载事件类，进而解析其
- * 引用的客户端类型（未装 AvalonBase 时 {@code NoClassDefFoundError}）。
+ * NeoForge entry point.
+ * <p>Do not use {@code @Mod.EventBusSubscriber}: the mod constructor would load the event class,
+ * which resolves client types and fails with {@code NoClassDefFoundError} without AvalonBase.
  */
 @Mod(Constants.MOD_ID)
 public class OnlyTPMod {
@@ -42,7 +42,7 @@ public class OnlyTPMod {
         LOGGER.info("Only TP Mod loaded!");
     }
 
-    /** 配置变化后重发命令树，客户端补全随之更新。 */
+    /** Resends the command tree after a config change so client suggestions follow. */
     private static void resendCommands(MinecraftServer server) {
         if (server == null) {
             return;

@@ -7,29 +7,29 @@ import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.level.GameType;
 
 /**
- * 游戏模式切换拦截业务逻辑（从原 Forge GameModeHandler 拆分，去除 Forge 事件 API）。
+ * Game mode switching rules (split from the old Forge handler, no Forge event API).
  */
 public class GameModeLogic {
 
     /**
      * /**
-     * 判断是否应拦截本次游戏模式切换。
+     * Whether this game mode change should be blocked.
      */
     public static boolean shouldBlock(ServerPlayer player, GameType oldGameMode) {
-        // 仅在 block_non_tp 或 both 模式拦截
+        // Blocks only in block_non_tp or both modes
         if (OnlyTPConfig.isDisabled() || OnlyTPConfig.isAllowTpOnlyMode()) return false;
 
-        // 非 OP 不拦截
+        // Never blocks non-operators
         if (!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return false;
 
-        // 黑名单豁免
+        // Blacklist exemption
         String playerName = player.getName().getString();
         if (OnlyTPConfig.isBlacklisted(playerName)) return false;
 
-        // OP 命令白名单包含 gamemode 时放行游戏模式切换（与命令白名单语义一致）
+        // A whitelisted gamemode command unblocks the switcher, matching command whitelist semantics
         if (OnlyTPConfig.isWhitelistedForOp("gamemode")) return false;
 
-        // 提示并回滚
+        // Notify and roll back
         player.sendSystemMessage(ModMsg.red(player, "message.onlytp.blocked_gamemode"), true);
         return true;
     }

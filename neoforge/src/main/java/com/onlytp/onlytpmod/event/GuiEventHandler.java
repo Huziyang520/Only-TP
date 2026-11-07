@@ -15,7 +15,7 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * NeoForge 客户端：暂停界面注入 AvalonBase 界面入口（未装则无按钮）。
+ * NeoForge client: pause button opening the AvalonBase screen (absent without it).
  */
 public class GuiEventHandler {
 

@@ -17,24 +17,24 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * 聊天提示的统一出口（红色 + 兜底文案）。
- * <p><b>为什么需要兜底</b>：Only TP 是服务端侧模组，{@link Component#translatable(String)}
- * 的翻译是在<b>接收端</b>解析的。接收端（客户端）没装本模组时解析不到语言文件，聊天里会
+ * Single outlet for chat messages (red text plus a fallback string).
+ * <p><b>Why a fallback</b>: Only TP runs on the server and {@link Component#translatable(String)}
+ * resolves on the receiving side; a client without the mod cannot read the language files
  */
 public final class ModMsg {
 
     private static final String MOD_ID = "onlytp";
     private static final String FALLBACK_LANG = "en_us";
-    /** 语言文件也读不到时的最后一道保险。 */
+    /** Last resort when the language file is missing too. */
     private static final String HARD_FALLBACK = "This action has been disabled by the administrator!";
 
-    /** 语言代码 → （key → 文案），每个语言只解析一次。 */
+    /** Language code to (key to text); each language is parsed once. */
     private static final Map<String, Map<String, String>> CACHE = new HashMap<>();
 
     private ModMsg() {
     }
 
-    /** 红色聊天提示：优先由接收端按自己的语言解析，接收端没装模组时用同语言的兜底文案。 */
+    /** Red chat message: resolved by the receiver's own language, with a same-language fallback. */
     public static MutableComponent red(Player player, String key) {
         return Component.translatableWithFallback(key, fallback(player, key)).withStyle(ChatFormatting.RED);
     }
@@ -49,7 +49,7 @@ public final class ModMsg {
         return value != null ? stripLegacyColor(value) : HARD_FALLBACK;
     }
 
-    /** 玩家客户端上报的语言代码；读不到（例如客户端本地玩家）时按基准语言处理。 */
+    /** Language reported by the client; falls back to the base language when unavailable. */
     private static String clientLanguage(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             String language = serverPlayer.clientInformation().language();
@@ -74,7 +74,7 @@ public final class ModMsg {
         }
     }
 
-    /** 按确切路径读语言文件——不要枚举目录（NeoForge 侧目录枚举不可靠）。 */
+    /** Reads the language file by exact path; do not enumerate the directory (unreliable on NeoForge). */
     private static Map<String, String> load(String lang) {
         String path = "/assets/" + MOD_ID + "/lang/" + lang + ".json";
         try (InputStream in = ModMsg.class.getResourceAsStream(path)) {
@@ -94,7 +94,7 @@ public final class ModMsg {
         }
     }
 
-    /** 去掉旧式 {@code §x} 颜色码：兜底文案会原样进聊天，带码只会显示成乱码。 */
+    /** Strips legacy § colour codes: fallback text goes to chat verbatim and codes would show as garbage. */
     private static String stripLegacyColor(String value) {
         if (value.indexOf('\u00A7') < 0) return value;
         StringBuilder sb = new StringBuilder(value.length());

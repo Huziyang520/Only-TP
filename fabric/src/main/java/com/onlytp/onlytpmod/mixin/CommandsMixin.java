@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Fabric 命令执行拦截（等价于原 Forge CommandEvent）。
- * 在 Commands.performCommand(ParseResults, String) 处拦截（与 Forge CommandEvent 触发点一致），
- * 直接使用解析结果判断是否取消。
+ * Fabric command blocking (equivalent to Forge's CommandEvent).
+ * Hooks Commands.performCommand(ParseResults, String), the same point Forge fires CommandEvent,
+ * and cancels using the already parsed result.
  */
 @Mixin(Commands.class)
 public class CommandsMixin {
