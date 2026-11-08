@@ -16,19 +16,19 @@ description = '''
 '''
 [[dependencies.${mod_id}]]
 modId = "forge"
-type = "required"
+mandatory = true
 versionRange = "${forge_loader_version_range}"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "minecraft"
-type = "required"
+mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "avalonbase"
-type = "optional"
+mandatory = false
 versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
