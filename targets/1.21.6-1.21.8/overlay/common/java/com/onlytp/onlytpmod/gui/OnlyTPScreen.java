@@ -165,8 +165,23 @@ public class OnlyTPScreen extends Screen {
         addRenderableWidget(cancel);
     }
 
+
+    private boolean backgroundDrawn;
+
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        if (backgroundDrawn) {
+            return;
+        }
+        backgroundDrawn = true;
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+    }
+
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+
+        backgroundDrawn = false;
+        renderBackground(graphics, mouseX, mouseY, partialTick);
 
         mouseX = (int) anim.localX(mouseX, width);
         mouseY = (int) anim.localY(mouseY, height);
