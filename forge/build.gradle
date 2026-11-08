@@ -40,7 +40,7 @@ configurations {
 }
 
 dependencies {
-    camelotEmbed("com.camelot:camelot-forge-${mc_range_label}:${camelot_version}") {
+    camelotEmbed("com.camelot:camelot-forge-${mc_range_label}:${camelot_version}@jar") {
         transitive = false
     }
 
@@ -51,7 +51,7 @@ dependencies {
         include "avalonbase-fabric-${avalon_range}-${avalon_version}-dev.jar"
     }
 
-    compileOnly("com.camelot:camelot-forge-${mc_range_label}:${camelot_version}") {
+    compileOnly("com.camelot:camelot-forge-${mc_range_label}:${camelot_version}@jar") {
         transitive = false
     }
 
@@ -63,9 +63,23 @@ tasks.withType(JavaCompile).configureEach {
     sourceCompatibility = targetCompatibility = "17"
 }
 
+tasks.register('camelotJarJarMetadata') {
+    def outFile = layout.buildDirectory.file('jarjar/metadata.json')
+    outputs.file(outFile)
+    doLast {
+        def jarFile = configurations.camelotEmbed.singleFile
+        outFile.get().asFile.parentFile.mkdirs()
+        outFile.get().asFile.text = """{"jars":[{"identifier":{"group":"com.camelot","artifact":"camelot-forge-${mc_range_label}"},"version":{"range":"[1.0.0,)","artifactVersion":"${camelot_version}"},"path":"META-INF/jarjar/${jarFile.name}","isObfuscated":true}]}"""
+    }
+}
+
 jar {
-    from({ zipTree(configurations.camelotEmbed.singleFile) }) {
-        exclude 'META-INF/**'
+    dependsOn 'camelotJarJarMetadata'
+    from({ configurations.camelotEmbed.singleFile }) {
+        into 'META-INF/jarjar'
+    }
+    from(layout.buildDirectory.dir('jarjar')) {
+        into 'META-INF/jarjar'
     }
     finalizedBy('reobfJar')
 }

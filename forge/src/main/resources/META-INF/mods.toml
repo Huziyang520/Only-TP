@@ -15,6 +15,12 @@ description = '''
 [CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。
 '''
 [[dependencies.${mod_id}]]
+modId = "camelot"
+mandatory = true
+versionRange = "[1.0.0,)"
+ordering = "BEFORE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
 modId = "forge"
 mandatory = true
 versionRange = "${forge_loader_version_range}"
