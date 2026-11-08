@@ -1,10 +1,8 @@
 package com.onlytp.onlytpmod;
 
-import com.camelot.config.ConfigEnums;
 import com.camelot.net.CamelotNet;
 import com.camelot.neoforge.NeoConfigs;
 import com.mojang.logging.LogUtils;
-import com.onlytp.onlytpmod.client.NeoForgeConfigScreens;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.event.CommandLogic;
 import com.onlytp.onlytpmod.event.CommandRegistrationLogic;
@@ -26,13 +24,11 @@ public class OnlyTPMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public OnlyTPMod(IEventBus modEventBus) {
-        ConfigEnums.register(Constants.MOD_ID, "mode", com.onlytp.onlytpmod.config.NeoMode.class);
         NeoConfigs.register(OnlyTPConfig.all());
         CamelotNet.register(OnlyTPConfig.CONFIG, OnlyTPMod::resendCommands);
 
         NeoForge.EVENT_BUS.register(this);
         GuiEventHandler.register();
-        NeoForgeConfigScreens.register();
 
         LOGGER.info("Only TP Mod loaded!");
     }

@@ -6,7 +6,7 @@ displayName = "${mod_name}"
 
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/only-tp"
 issueTrackerURL = "https://github.com/Huziyang520/Only-TP/issues"
-iconFile = "assets/onlytp/textures/onlytp.png"
+logoFile = "assets/onlytp/textures/onlytp.png"
 authors = "${mod_author}"
 description = '''
 [EN] Restrict players to TP-related commands only, or block all non-TP commands.
@@ -28,9 +28,20 @@ versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
-
+modId = "camelot"
+type = "required"
+versionRange = "[1.0.0,)"
+ordering = "AFTER"
+side = "BOTH"
+[[dependencies.${mod_id}]]
 modId = "avalonbase"
 type = "optional"
 versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "cloth-config"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "CLIENT"

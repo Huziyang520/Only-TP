@@ -3,7 +3,7 @@
     "id": "onlytp",
     "version": "${version}",
     "name": "${mod_name}",
-    "description": "[EN] Restrict players to TP-related commands only, or block all non-TP commands.\n[CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。",
+    "description": "[EN] Restrict players to TP-related commands only, or block all non-TP commands.\\n[CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。",
     "authors": [
         "${mod_author}"
     ],
@@ -29,10 +29,11 @@
         "${mod_id}.fabric.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.14",
+        "fabricloader": ">=0.16",
         "fabric-api": "*",
-        "minecraft": ">=26.3",
-        "java": ">=25"
+        "camelot": ">=1.0.0",
+        "minecraft": "${fabric_mc_range}",
+        "java": ">=${java_version}"
     },
     "suggests": {
         "avalonbase": ">=1.0.0"

@@ -12,22 +12,20 @@ import com.avalon.base.gui.theme.ThemedButton;
 import com.avalon.base.gui.theme.ThemedRadio;
 import com.avalon.base.gui.theme.ThemedToggle;
 import com.avalon.base.gui.theme.VanillaTheme;
+import com.avalon.base.gui.GuiCursor;
 import com.avalon.base.gui.util.MouseButtons;
 import com.camelot.net.CamelotNet;
+import com.camelot.platform.Perms;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.util.ModMsg;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,8 +113,7 @@ public class OnlyTPScreen extends Screen {
 
         int relPanelBottom = CONTENT_MAX_Y + 14;
         guiTop = Math.min(Math.max(6, (height - GUI_HEIGHT) / 2), height - 6 - relPanelBottom);
-        canEdit = minecraft == null || minecraft.player == null
-                || minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+        canEdit = Perms.canEdit(minecraft == null ? null : minecraft.player);
         blScroll = Math.max(0, blScroll);
         blAnim.setTarget(blScroll);
 
@@ -169,14 +166,9 @@ public class OnlyTPScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
-    }
-
-    @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-
+        renderBackground(graphics, mouseX, mouseY, partialTick);
         mouseX = (int) anim.localX(mouseX, width);
         mouseY = (int) anim.localY(mouseY, height);
         anim.beginFrame(graphics, width, height);
@@ -186,13 +178,13 @@ public class OnlyTPScreen extends Screen {
 
         int cardLeftX = 8, cardLeftW = 146;
         theme.drawCard(graphics, guiLeft + cardLeftX, yo(14), cardLeftW, 76);
-        graphics.text(font, Component.translatable("gui.onlytp.mode_label"),
+        graphics.drawString(font, Component.translatable("gui.onlytp.mode_label"),
                 guiLeft + cardLeftX + 8, yo(18), theme.labelColor(), false);
         for (ThemedRadio r : modeRadios) r.render(graphics, font, theme, yo(r.relY), mouseX, mouseY);
 
         int cardRightX = 154, cardRightW = 138;
         theme.drawCard(graphics, guiLeft + cardRightX, yo(14), cardRightW, 76);
-        graphics.text(font, Component.translatable("gui.onlytp.toggle_label"),
+        graphics.drawString(font, Component.translatable("gui.onlytp.toggle_label"),
                 guiLeft + cardRightX + 8, yo(18), theme.labelColor(), false);
         showPauseToggle.render(graphics, font, theme, yo(showPauseToggle.relY), mouseX, mouseY);
         styleToggle.render(graphics, font, theme, yo(styleToggle.relY), mouseX, mouseY);
@@ -204,7 +196,7 @@ public class OnlyTPScreen extends Screen {
         if (isBlacklistVisible()) {
             int blCardY = 98;
             theme.drawCard(graphics, guiLeft + cardLeftX, yo(blCardY), GUI_WIDTH - 16, 64);
-            graphics.text(font, Component.translatable("gui.onlytp.blacklist_label"),
+            graphics.drawString(font, Component.translatable("gui.onlytp.blacklist_label"),
                     guiLeft + 18, yo(blCardY + 4), theme.labelColor(), false);
 
             List<String> bl = getCurrentBlacklist();
@@ -226,7 +218,7 @@ public class OnlyTPScreen extends Screen {
 
                     rowRemoveHint = Component.translatable("gui.onlytp.click_to_remove").getString();
                 }
-                graphics.text(font, bl.get(idx),
+                graphics.drawString(font, bl.get(idx),
                         guiLeft + 22, y, canEdit ? theme.textColor() : theme.disabledColor(), false);
             }
 
@@ -243,7 +235,7 @@ public class OnlyTPScreen extends Screen {
         }
 
         int bottomY = 200;
-        graphics.text(font,
+        graphics.drawString(font,
                 Component.translatable(canEdit ? "gui.onlytp.can_edit" : "gui.onlytp.view_only"),
                 guiLeft + 8, yo(bottomY), canEdit ? theme.okColor() : theme.warnColor(), false);
 
@@ -253,7 +245,7 @@ public class OnlyTPScreen extends Screen {
             if (suspended) anim.resume(graphics, width, height);
         }
 
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
 
         if (!theme.vanillaButtons() && theme instanceof ModernTheme modern) {
             ButtonFrames.render(graphics, this, modern.palette());
@@ -286,7 +278,7 @@ public class OnlyTPScreen extends Screen {
             }
         }
 
-        if (showHand) graphics.requestCursor(CursorTypes.POINTING_HAND);
+        GuiCursor.apply(showHand);
 
         String tip = null;
         for (ThemedRadio r : modeRadios) {
@@ -318,10 +310,8 @@ public class OnlyTPScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean param) {
-        double mouseX = event.x();
-        double mouseY = event.y();
-        if (MouseButtons.isLeft(event) && canEdit) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (MouseButtons.isLeft(button) && canEdit) {
 
             for (int i = 0; i < 4; i++) {
                 if (modeRadios[i].isClicked(mouseX, mouseY, font, yo(modeRadios[i].relY))) {
@@ -377,7 +367,7 @@ public class OnlyTPScreen extends Screen {
                 }
             }
         }
-        return super.mouseClicked(event, param);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void playClickSound() {
@@ -402,17 +392,17 @@ public class OnlyTPScreen extends Screen {
         return false;
     }
 
-    private void showTip(GuiGraphicsExtractor g, String text, int mouseX, int mouseY) {
+    private void showTip(GuiGraphics g, String text, int mouseX, int mouseY) {
         if (localUseVanilla) {
-            g.setTooltipForNextFrame(font, Component.literal(text), mouseX, mouseY);
+            g.renderTooltip(font, Component.literal(text), mouseX, mouseY);
             return;
         }
         PanelHover.render(g, font, text, mouseX, mouseY, this.width, this.height);
     }
 
-    private void showTip(GuiGraphicsExtractor g, String text, int mouseX, int mouseY, int textColor) {
+    private void showTip(GuiGraphics g, String text, int mouseX, int mouseY, int textColor) {
         if (localUseVanilla) {
-            g.setTooltipForNextFrame(font, Component.literal(text), mouseX, mouseY);
+            g.renderTooltip(font, Component.literal(text), mouseX, mouseY);
             return;
         }
         PanelHover.render(g, font, text, mouseX, mouseY, this.width, this.height, textColor);
@@ -450,17 +440,17 @@ public class OnlyTPScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        if (event.isConfirmation() && addButton != null && addButton.active) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if ((keyCode == 257 || keyCode == 335) && addButton != null && addButton.active) {
             addPlayer();
             return true;
         }
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void msg(String key) {
         if (minecraft != null && minecraft.player != null)
-            minecraft.player.sendSystemMessage(ModMsg.red(minecraft.player, key));
+            minecraft.player.displayClientMessage(ModMsg.red(minecraft.player, key), false);
     }
 
     private void updateAddButtonState() {

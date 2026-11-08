@@ -1,29 +1,28 @@
 plugins {
     id 'multiloader-loader'
-    id 'net.fabricmc.fabric-loom'
+    id 'fabric-loom'
 }
+
 dependencies {
-    minecraft("com.mojang:minecraft:${minecraft_version}")
-    implementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
-    implementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    compileOnly("com.terraformersmc:modmenu:20.0.1")
+    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
+        transitive = false
+    }
+    modCompileOnly "com.terraformersmc:modmenu:${modmenu_version}"
 
-    implementation fileTree(project.file("../../../AvalonBase/26.3/fabric/build/libs")) {
-        include "avalonbase-fabric-26.3-1.5.1.jar"
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
+    modCompileOnly fileTree(project.file('../../../AvalonBase/1.21-1.21.1/fabric/build/libs')) {
+        include 'avalonbase-fabric-1.21-1.21.1-1.5.1.jar'
     }
 
-    implementation "com.camelot:camelot-fabric-${mc_range_label}:${camelot_version}"
+    modImplementation "com.camelot:camelot-fabric-${mc_range_label}:${camelot_version}"
     include "com.camelot:camelot-fabric-${mc_range_label}:${camelot_version}"
 }
+
 loom {
-    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
-    if (aw.exists()) {
-        accessWidenerPath.set(aw)
-    }
     runs {
         client {
             client()
