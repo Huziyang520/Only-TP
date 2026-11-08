@@ -5,8 +5,6 @@ import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.util.ModMsg;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.PermissionSet;
-import net.minecraft.server.permissions.Permissions;
 
 public class CommandLogic {
 
@@ -42,7 +40,7 @@ public class CommandLogic {
         if (!(source.getEntity() instanceof ServerPlayer player)) return false;
 
         String playerName = player.getName().getString();
-        boolean isOp = source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+        boolean isOp = source.hasPermission(2);
 
         if (OnlyTPConfig.isBothMode()) {
 
@@ -81,7 +79,7 @@ public class CommandLogic {
     private static boolean deniesEntitySelector(String raw, ServerPlayer player) {
         if (OnlyTPConfig.allowEntitySelectors()) return false;
         if (raw == null || raw.indexOf('@') < 0) return false;
-        player.sendSystemMessage(ModMsg.red(player, "message.onlytp.selector_blocked"), false);
+        player.sendSystemMessage(ModMsg.red(player, "message.onlytp.selector_blocked"));
         return true;
     }
 
@@ -98,15 +96,15 @@ public class CommandLogic {
         }
 
         if ("gamemode".equals(cmd) || "g".equals(cmd)) {
-            player.sendSystemMessage(ModMsg.red(player, "message.onlytp.blocked_gamemode"), false);
+            player.sendSystemMessage(ModMsg.red(player, "message.onlytp.blocked_gamemode"));
             return true;
         }
-        player.sendSystemMessage(ModMsg.red(player, "message.onlytp.blocked"), false);
+        player.sendSystemMessage(ModMsg.red(player, "message.onlytp.blocked"));
         return true;
     }
 
     private static void executeElevated(ServerPlayer player, String command) {
-        var elevated = player.createCommandSourceStack().withPermission(PermissionSet.ALL_PERMISSIONS);
+        CommandSourceStack elevated = player.createCommandSourceStack().withPermission(4);
         player.level().getServer().getCommands().performPrefixedCommand(elevated, command);
     }
 }

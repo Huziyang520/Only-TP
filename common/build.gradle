@@ -1,26 +1,36 @@
 plugins {
     id 'multiloader-common'
-    id 'net.neoforged.moddev'
 }
 
-neoForge {
-    neoFormVersion = neo_form_version
+def useLoom = (findProperty('compile_plugin') ?: 'moddev') == 'loom'
+if (useLoom) {
+    apply plugin: 'fabric-loom'
+} else {
+    apply plugin: 'net.neoforged.moddev'
+}
 
-    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
-    if (at.exists()) {
-        accessTransformers.from(at.absolutePath)
+if (!useLoom) {
+    neoForge {
+        neoFormVersion = neo_form_version
     }
 }
 
 dependencies {
+    if (useLoom) {
+        minecraft "com.mojang:minecraft:${minecraft_version}"
+        mappings loom.officialMojangMappings()
+    }
     compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
-    compileOnly "com.camelot:camelot-common-${mc_range_label}:${camelot_version}"
+    if (useLoom) {
+        modCompileOnly "com.camelot:camelot-fabric-${mc_range_label}:${camelot_version}"
+    } else {
+        compileOnly "com.camelot:camelot-common-${mc_range_label}:${camelot_version}"
+    }
 
-    compileOnly fileTree(project.file("../../../AvalonBase/26.3/fabric/build/libs")) {
-        include "avalonbase-fabric-26.3-1.5.1.jar"
-        exclude "*sources*", "*javadoc*"
+    compileOnly fileTree(project.file("../../../AvalonBase/${avalon_range}/fabric/build/devlibs")) {
+        include "avalonbase-fabric-${avalon_range}-${avalon_version}-dev.jar"
     }
 }
 
@@ -32,25 +42,6 @@ configurations {
     commonResources {
         canBeResolved = false
         canBeConsumed = true
-    }
-}
-
-def targetOverlay = findProperty('target_overlay')
-if (targetOverlay) {
-    def overlayRoot = rootProject.file(targetOverlay)
-    if (new File(overlayRoot, 'common/java').directory) {
-        def mergedJava = layout.buildDirectory.dir('merged/java')
-        def mergeJava = tasks.register('mergeTargetJava', Sync) {
-            from('src/main/java')
-            from(new File(overlayRoot, 'common/java')) {
-                include '**/*.java'
-            }
-            into mergedJava
-
-            duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        }
-        sourceSets.main.java.setSrcDirs([mergedJava])
-        tasks.named('compileJava') { dependsOn mergeJava }
     }
 }
 

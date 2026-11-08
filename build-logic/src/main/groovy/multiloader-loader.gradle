@@ -17,7 +17,7 @@ dependencies {
     commonResources project(path: ':common', configuration: 'commonResources')
 }
 
-final def commonMerge = project(':common').tasks.matching { it.name == 'mergeTargetJava' }
+final def commonMerge = project(':common').tasks.matching { it.name in ['mergeTargetJava', 'mergeTargetResources'] }
 tasks.configureEach {
     if (name in ['compileJava', 'processResources']) {
         dependsOn commonMerge
@@ -33,4 +33,3 @@ processResources {
     dependsOn(configurations.commonResources)
     from(configurations.commonResources)
 }
-

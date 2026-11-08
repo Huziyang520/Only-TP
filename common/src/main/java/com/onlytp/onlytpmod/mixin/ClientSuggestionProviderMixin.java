@@ -2,7 +2,6 @@ package com.onlytp.onlytpmod.mixin;
 
 import com.onlytp.onlytpmod.event.ClientPermissionLogic;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-import net.minecraft.server.permissions.PermissionSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -11,8 +10,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ClientSuggestionProvider.class)
 public class ClientSuggestionProviderMixin {
 
-    @Inject(method = "permissions", at = @At("RETURN"), cancellable = true)
-    private void onlytp$grantEntitySelectors(CallbackInfoReturnable<PermissionSet> cir) {
-        cir.setReturnValue(ClientPermissionLogic.grant(cir.getReturnValue()));
+    private static final int SELECTOR_PERMISSION_LEVEL = 2;
+
+    @Inject(method = "hasPermission", at = @At("HEAD"), cancellable = true, require = 1)
+    private void onlytp$grantEntitySelectors(int level, CallbackInfoReturnable<Boolean> cir) {
+        if (level == SELECTOR_PERMISSION_LEVEL && ClientPermissionLogic.shouldGrantEntitySelectors()) {
+            cir.setReturnValue(true);
+        }
     }
 }

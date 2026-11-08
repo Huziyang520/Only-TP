@@ -2,7 +2,7 @@ package com.onlytp.onlytpmod.gui;
 
 import com.avalon.base.gui.theme.Palette;
 import com.avalon.base.gui.theme.ThemedButton;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 public final class ButtonFrames {
@@ -10,7 +10,7 @@ public final class ButtonFrames {
     private ButtonFrames() {
     }
 
-    public static void render(GuiGraphicsExtractor g, Screen screen, Palette palette) {
+    public static void render(GuiGraphics g, Screen screen, Palette palette) {
         for (var child : screen.children()) {
             if (!(child instanceof ThemedButton btn)) {
                 continue;

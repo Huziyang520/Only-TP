@@ -1,10 +1,8 @@
 package com.onlytp.onlytpmod;
 
-import com.camelot.config.ConfigEnums;
 import com.camelot.net.CamelotNet;
 import com.camelot.neoforge.NeoConfigs;
 import com.mojang.logging.LogUtils;
-import com.onlytp.onlytpmod.client.NeoForgeConfigScreens;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.event.CommandLogic;
 import com.onlytp.onlytpmod.event.CommandRegistrationLogic;
@@ -12,9 +10,11 @@ import com.onlytp.onlytpmod.event.GameModeLogic;
 import com.onlytp.onlytpmod.event.GuiEventHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -26,13 +26,13 @@ public class OnlyTPMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public OnlyTPMod(IEventBus modEventBus) {
-        ConfigEnums.register(Constants.MOD_ID, "mode", com.onlytp.onlytpmod.config.NeoMode.class);
         NeoConfigs.register(OnlyTPConfig.all());
         CamelotNet.register(OnlyTPConfig.CONFIG, OnlyTPMod::resendCommands);
 
         NeoForge.EVENT_BUS.register(this);
-        GuiEventHandler.register();
-        NeoForgeConfigScreens.register();
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            GuiEventHandler.register();
+        }
 
         LOGGER.info("Only TP Mod loaded!");
     }

@@ -1,0 +1,34 @@
+modLoader = "javafml"
+loaderVersion = "${forge_loader_version_range}"
+license = "${license}"
+[[mods]]
+modId = "${mod_id}"
+version = "${version}"
+displayName = "${mod_name}"
+
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/only-tp"
+issueTrackerURL = "https://github.com/Huziyang520/Only-TP/issues"
+logoFile = "assets/onlytp/textures/onlytp.png"
+authors = "${mod_author}"
+description = '''
+[EN] Restrict players to TP-related commands only, or block all non-TP commands.
+[CN] 限制玩家仅可使用与传送（TP）相关的指令，或禁止所有非 TP 指令。
+'''
+[[dependencies.${mod_id}]]
+modId = "forge"
+type = "required"
+versionRange = "${forge_loader_version_range}"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "avalonbase"
+type = "optional"
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"

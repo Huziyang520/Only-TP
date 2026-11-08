@@ -10,7 +10,14 @@ base {
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    toolchain.languageVersion = JavaLanguageVersion.of((findProperty('compile_java_version') ?: java_version) as int)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    if (findProperty('java_target_version') != null) {
+        options.release = java_target_version as int
+    }
 }
 
 def licenseFile = new File(rootProject.projectDir.parentFile, 'LICENSE')
@@ -79,6 +86,41 @@ repositories {
     }
 }
 
+def targetOverlayProperty = findProperty('target_overlay')
+if (targetOverlayProperty) {
+    def overlayRoot = rootProject.file(targetOverlayProperty)
+    def overlayJava = new File(overlayRoot, "${project.name}/java")
+    def overlayResources = new File(overlayRoot, "${project.name}/resources")
+    if (overlayJava.directory) {
+        def mergedJava = layout.buildDirectory.dir('merged/java')
+        def mergeJava = tasks.register('mergeTargetJava', Sync) {
+            from('src/main/java')
+            from(overlayJava) { include '**/*.java' }
+            into mergedJava
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        sourceSets.main.java.setSrcDirs([mergedJava])
+        tasks.named('compileJava') { dependsOn mergeJava }
+    }
+    if (overlayResources.directory) {
+        def mergedResources = layout.buildDirectory.dir('merged/resources')
+        def mergeResources = tasks.register('mergeTargetResources', Sync) {
+            from('src/main/resources')
+            from(overlayResources)
+            into mergedResources
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        sourceSets.main.resources.setSrcDirs([mergedResources])
+        processResources { dependsOn mergeResources }
+    }
+    def mergeTasks = tasks.matching { it.name in ['mergeTargetJava', 'mergeTargetResources'] }
+    tasks.configureEach {
+        if (name in ['processResources']) {
+            dependsOn mergeTasks
+        }
+    }
+}
+
 jar {
     if (licenseFile.exists()) {
         from(licenseFile) {
@@ -101,21 +143,22 @@ jar {
 
 processResources {
     var expandProps = [
-            'version'                      : version,
-            'group'                        : project.group,
-            'minecraft_version'            : minecraft_version,
-            'minecraft_version_range'      : minecraft_version_range,
-            'fabric_version'               : fabric_version,
-            'fabric_loader_version'        : fabric_loader_version,
-            'mod_name'                     : mod_name,
-            'mod_author'                   : mod_author,
-            'mod_id'                       : mod_id,
-            'license'                      : license,
-            'description'                  : project.description,
-            "neoforge_version": neoforge_version,
-            "neoforge_version_range": neoforge_version_range,
-            'credits'                      : credits,
-            'java_version'                 : java_version
+            'version'                   : version,
+            'group'                     : project.group,
+            'minecraft_version'         : minecraft_version,
+            'minecraft_version_range'   : minecraft_version_range,
+            'fabric_version'            : fabric_version,
+            'fabric_loader_version'     : fabric_loader_version,
+            'fabric_mc_dep'             : fabric_mc_dep,
+            'mod_name'                  : mod_name,
+            'mod_author'                : mod_author,
+            'mod_id'                    : mod_id,
+            'license'                   : license,
+            'description'               : project.description,
+            'neoforge_version'          : project.hasProperty('neoforge_version') ? neoforge_version : '',
+            'forge_loader_version_range': project.hasProperty('forge_loader_version_range') ? forge_loader_version_range : '',
+            'credits'                   : credits,
+            'java_version'              : java_version
     ]
 
     var jsonExpandProps = expandProps.collectEntries {
@@ -138,11 +181,6 @@ publishing {
         register('mavenJava', MavenPublication) {
             artifactId base.archivesName.get()
             from components.java
-        }
-    }
-    repositories {
-        maven {
-            url System.getenv('local_maven_url')
         }
     }
 }

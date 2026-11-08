@@ -31,8 +31,8 @@
     "depends": {
         "fabricloader": ">=0.14",
         "fabric-api": "*",
-        "minecraft": ">=26.3",
-        "java": ">=25"
+        "minecraft": "${fabric_mc_dep}",
+        "java": ">=17"
     },
     "suggests": {
         "avalonbase": ">=1.0.0"
@@ -43,6 +43,11 @@
     "custom": {
         "catalogue": {
             "configFactory": "com.onlytp.onlytpmod.client.CatalogueConfigEntry"
+        },
+        "modmenu": {
+            "links": {
+                "onlytp.feedback": "https://issue.mengcai.online/"
+            }
         }
     }
 }

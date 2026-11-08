@@ -2,49 +2,42 @@ plugins {
     id 'multiloader-loader'
     id 'net.neoforged.moddev'
 }
+
 neoForge {
     version = neoforge_version
 
-    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
-    if (at.exists()) {
-        accessTransformers.from(at.absolutePath)
-    }
     runs {
-        configureEach {
-            systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
-            ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
-        }
         client {
             client()
             programArguments.addAll '--username', 'Dev'
-            gameDirectory = this.mkdir(this.file('runs/client'))
-        }
-        data {
-            clientData()
-            gameDirectory = this.mkdir(this.file('runs/data'))
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
         server {
             server()
-            gameDirectory = this.mkdir(this.file('runs/server'))
         }
     }
+
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
         }
     }
 }
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-
-    implementation fileTree(project.file("../../../AvalonBase/26.3/neoforge/build/libs")) {
-        include "avalonbase-neoforge-26.3-1.5.1.jar"
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
+    compileOnly fileTree(project.file("../../../AvalonBase/${avalon_range}/fabric/build/devlibs")) {
+        include "avalonbase-fabric-${avalon_range}-${avalon_version}-dev.jar"
     }
 
     implementation "com.camelot:camelot-neoforge-${mc_range_label}:${camelot_version}"
     jarJar "com.camelot:camelot-neoforge-${mc_range_label}:${camelot_version}"
+}
+
+configurations.configureEach {
+    if (name.startsWith('neoFormRuntime')) {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'org.apache.logging.log4j') {
+                details.useVersion('2.19.0')
+            }
+        }
+    }
 }
