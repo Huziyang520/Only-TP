@@ -12,7 +12,6 @@ import com.avalon.base.gui.theme.ThemedButton;
 import com.avalon.base.gui.theme.ThemedRadio;
 import com.avalon.base.gui.theme.ThemedToggle;
 import com.avalon.base.gui.theme.VanillaTheme;
-import com.avalon.base.gui.GuiCursor;
 import com.avalon.base.gui.util.MouseButtons;
 import com.camelot.net.CamelotNet;
 import com.camelot.platform.Perms;
@@ -263,35 +262,6 @@ public class OnlyTPScreen extends Screen {
         if (!theme.vanillaButtons() && theme instanceof ModernTheme modern) {
             ButtonFrames.render(graphics, this, modern.palette());
         }
-
-        boolean showHand = false;
-        if (canEdit) {
-            for (var w : children()) {
-                if (w instanceof ThemedButton btn && btn.active && btn.isHoveredOrFocused()) {
-                    showHand = true;
-                    break;
-                }
-            }
-            if (!showHand) {
-                for (int i = 0; i < 4; i++) {
-                    if (modeRadios[i].isClicked(mouseX, mouseY, font, yo(modeRadios[i].relY))) {
-                        showHand = true;
-                        break;
-                    }
-                }
-            }
-            if (!showHand && (showPauseToggle.isClicked(mouseX, mouseY, font, yo(showPauseToggle.relY))
-                    || styleToggle.isClicked(mouseX, mouseY, font, yo(styleToggle.relY))
-                    || animToggle.isClicked(mouseX, mouseY, font, yo(animToggle.relY))
-                    || selectorToggle.isClicked(mouseX, mouseY, font, yo(selectorToggle.relY)))) {
-                showHand = true;
-            }
-            if (!showHand && hoveredRow >= 0 && isBlacklistVisible()) {
-                showHand = true;
-            }
-        }
-
-        GuiCursor.apply(showHand);
 
         String tip = null;
         for (ThemedRadio r : modeRadios) {

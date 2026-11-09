@@ -16,7 +16,6 @@ import com.camelot.net.CamelotNet;
 import com.camelot.platform.Perms;
 import com.onlytp.onlytpmod.config.OnlyTPConfig;
 import com.onlytp.onlytpmod.util.ModMsg;
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -250,35 +249,6 @@ public class OnlyTPScreen extends Screen {
         if (!theme.vanillaButtons() && theme instanceof ModernTheme modern) {
             ButtonFrames.render(graphics, this, modern.palette());
         }
-
-        boolean showHand = false;
-        if (canEdit) {
-            for (var w : children()) {
-                if (w instanceof ThemedButton btn && btn.active && btn.isHoveredOrFocused()) {
-                    showHand = true;
-                    break;
-                }
-            }
-            if (!showHand) {
-                for (int i = 0; i < 4; i++) {
-                    if (modeRadios[i].isClicked(mouseX, mouseY, font, yo(modeRadios[i].relY))) {
-                        showHand = true;
-                        break;
-                    }
-                }
-            }
-            if (!showHand && (showPauseToggle.isClicked(mouseX, mouseY, font, yo(showPauseToggle.relY))
-                    || styleToggle.isClicked(mouseX, mouseY, font, yo(styleToggle.relY))
-                    || animToggle.isClicked(mouseX, mouseY, font, yo(animToggle.relY))
-                    || selectorToggle.isClicked(mouseX, mouseY, font, yo(selectorToggle.relY)))) {
-                showHand = true;
-            }
-            if (!showHand && hoveredRow >= 0 && isBlacklistVisible()) {
-                showHand = true;
-            }
-        }
-
-        if (showHand) graphics.requestCursor(CursorTypes.POINTING_HAND);
 
         String tip = null;
         for (ThemedRadio r : modeRadios) {
