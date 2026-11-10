@@ -75,6 +75,11 @@ tasks.register('camelotJarJarMetadata') {
 
 jar {
     dependsOn 'camelotJarJarMetadata'
+    // 混淆环境下 @Inject 的 method 必须靠 refmap 重映射；AP 只把它写进 tmp/compileJava。
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(layout.buildDirectory.dir('tmp/compileJava')) {
+        include refmapName
+    }
     from({ configurations.camelotEmbed.singleFile }) {
         into 'META-INF/jarjar'
     }
