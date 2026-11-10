@@ -1,4 +1,20 @@
-# Changelog — Only TP
+# Changelog
+
+## 1.7.0
+
+- The config engine and the config screens now live in the shared library **Camelot**, so every mod on this project uses the same implementation and the same look.
+  配置引擎与配置界面迁移到共享库 **Camelot**，本项目所有模组共用同一套实现与外观。
+- Configuration is split into `*-common.toml` (rules, synced from the server) and `*-client.toml` (local preferences only).
+  配置拆分为 `*-common.toml`（规则，由服务端同步）与 `*-client.toml`（仅本机偏好）。
+- New `enable_config_entry` option (replaces the old pause-button switch): when off, the mod-list config entry and the pause-menu button are both unavailable.
+  新增 `enable_config_entry`（取代原来的暂停按钮开关）：关闭后模组列表配置入口与暂停菜单按钮同时不可用。
+- The pause-menu button opens the AvalonBase editor only; the mod-list entry is the way into the mod's own screen.
+  暂停菜单按钮只打开 AvalonBase 编辑器；模组自身的配置界面走模组列表入口。
+- Mode is now an enum selector; screen switches are queued so opening and closing no longer flashes.
+  模式改为枚举下拉选择；界面切换改为排队处理，打开/关闭不再闪烁。
+- Per-target loader metadata: the NeoForge version range is declared for each target, and the 26.1-26.2 target builds against 26.1.2.
+  按区间声明加载器元数据：每个 target 单独声明 NeoForge 版本区间，26.1-26.2 目标基于 26.1.2 构建。
+ — Only TP
 
 ## 1.6.3
 
